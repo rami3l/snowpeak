@@ -3,20 +3,20 @@
 with RFLX.RFLX_Builtin_Types;
 
 package Snowpeak.Compat with
-  SPARK_Mode
+   SPARK_Mode
 is
-  use type RFLX.RFLX_Builtin_Types.Index;
+   use type RFLX.RFLX_Builtin_Types.Index;
 
-  function To_Ada_Stream
-   (Buffer : RFLX.RFLX_Builtin_Types.Bytes)
-    return Ada.Streams.Stream_Element_Array with
-    Pre => Buffer'First = 1
-    and then Buffer'Length <= Ada.Streams.Stream_Element_Offset'Last;
+   function To_Ada_Stream
+     (Buffer : RFLX.RFLX_Builtin_Types.Bytes)
+      return Ada.Streams.Stream_Element_Array with
+      Pre => Buffer'First = 1
+      and then Buffer'Length <= Ada.Streams.Stream_Element_Offset'Last;
 
-  function To_RFLX_Bytes
-   (Buffer : Ada.Streams.Stream_Element_Array)
-    return RFLX.RFLX_Builtin_Types.Bytes with
-    Pre => Buffer'First = 1
-    and then Buffer'Length <=
-     Ada.Streams.Stream_Element_Offset (RFLX.RFLX_Builtin_Types.Index'Last);
+   function To_RFLX_Bytes
+     (Buffer : Ada.Streams.Stream_Element_Array)
+      return RFLX.RFLX_Builtin_Types.Bytes with
+      Pre => Buffer'First = 1
+      and then Buffer'Length <=
+        Ada.Streams.Stream_Element_Offset (RFLX.RFLX_Builtin_Types.Index'Last);
 end Snowpeak.Compat;

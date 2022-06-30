@@ -1,23 +1,20 @@
 with Ada.Unchecked_Deallocation;
 with Snowpeak.Compat; use Snowpeak.Compat;
-with RFLX.Ekho.Packet;
-with RFLX.Ekho; use RFLX.Ekho;
+with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFLX_Types;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
-   package Packet renames RFLX.Ekho.Packet;
-
-   function To_Message (Str :  String) return Message is
-     (Size => Str'Length, Str => Str);
+   package Packet renames RFLX.RFC1157_SNMP.Message;
 
    function Write (Item :  Message) return Stream_Element_Array
    is
       Buffer : Types.Bytes_Ptr :=
-        new Types.Bytes (1 .. Types.Index (1 + 255));
-      Context : Packet.Context;
-      Res : Stream_Element_Array(1..256);
+        new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
+         Context : Packet.Context;
+      Res : Stream_Element_Array (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+
       procedure Free is new Ada.Unchecked_Deallocation
         (Types.Bytes, Types.Bytes_Ptr);
    begin
@@ -44,13 +41,10 @@ package body Snowpeak.Message is
    begin
       declare
          Bytes_Buffer : Types.Bytes_Ptr := new Types.Bytes'(To_RFLX_Bytes(Buffer(1..Last)));
-         Size : constant Byte :=  Bytes_Buffer.all(1);
+         Size : constant Byte :=  Bytes_Buffer.all(2);
       begin
-      if Size = 0 then
-         return (Size => 0, Str => "");
-      end if;
          -- Ada.Text_IO.Put_Line("BYTES_BUFFER: " & Bytes_Buffer.all'Image);
-         Packet.Initialize (Context, Bytes_Buffer, Written_Last => 8 + Bit_Length(8 * Size));
+         Packet.Initialize (Context, Bytes_Buffer, Written_Last => 8 * 2 + Bit_Length(8 * Size));
          Packet.Verify_Message (Context);
          -- Ada.Text_IO.Put_Line("PACKET: " & Context'Image);
          pragma Assert (Packet.Structural_Valid_Message (Context));

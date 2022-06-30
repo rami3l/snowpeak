@@ -1,4 +1,3 @@
-with Ada.Streams;            use Ada.Streams;
 with Ada.Containers.Vectors; use Ada.Containers;
 
 package Snowpeak.Message is
