@@ -9,12 +9,12 @@ package Snowpeak.Message is
 
    type Message_Access is access Message;
 
-   function To_Message (Str : in String) return Message with
+   function To_Message (Str : String) return Message with
       Pre => Str'Length in Message_Size_Type;
 
-   function Write (Item : in Message) return Stream_Element_Array;
+   function Write (Item : Message) return Stream_Element_Array;
 
    function Read
-     (Buffer : in Stream_Element_Array; Last : in Stream_Element_Offset)
+     (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)
       return Message;
 end Snowpeak.Message;
