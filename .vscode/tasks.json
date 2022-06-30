@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "gprbuild",
+      "projectFile": "${config:ada.projectFile}",
+      "problemMatcher": ["$ada"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "ada: Build current project"
+    },
+    {
+      "type": "gprbuild",
+      "projectFile": "${config:ada.projectFile}",
+      "checkFile": true,
+      "problemMatcher": ["$ada"],
+      "label": "ada: Check current file"
+    },
+    {
+      "type": "gnatprove",
+      "projectFile": "${config:ada.projectFile}",
+      "taskKind": 1,
+      "problemMatcher": ["$ada"],
+      "group": "build",
+      "label": "ada: Prove file"
+    },
+    {
+      "type": "gnatprove",
+      "projectFile": "${config:ada.projectFile}",
+      "taskKind": 0,
+      "problemMatcher": ["$ada"],
+      "group": "build",
+      "label": "ada: Prove project"
+    }
+  ]
+}

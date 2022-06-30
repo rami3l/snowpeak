@@ -9,10 +9,10 @@ package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
    package Packet renames RFLX.Ekho.Packet;
 
-   function To_Message (Str : in String) return Message is
+   function To_Message (Str :  String) return Message is
      (Size => Str'Length, Str => Str);
 
-   function Write (Item : in Message) return Stream_Element_Array
+   function Write (Item :  Message) return Stream_Element_Array
    is
       Buffer : Types.Bytes_Ptr :=
         new Types.Bytes (1 .. Types.Index (1 + 255));
@@ -34,7 +34,7 @@ package body Snowpeak.Message is
    -- https://stackoverflow.com/a/22770989
 
    function Read
-     (Buffer : in Stream_Element_Array; Last : in Stream_Element_Offset )
+     (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)
       return Message
    is
       Context : Packet.Context;

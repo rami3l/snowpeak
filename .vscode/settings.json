@@ -1,0 +1,18 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "triggerTaskOnSave.tasks": {
+    "ada: Build current project": ["*.ads", "*.adb", "alire.toml", "*.gpr"]
+  }
+  /*
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.rflx$",
+        "cmd": "rflx check '${file}'"
+      }
+    ]
+  }
+  */
+}
