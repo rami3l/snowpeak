@@ -10,8 +10,10 @@ procedure Main is
      (Addr => Inet_Addr ("127.0.0.1"), Port => 161, others => <>);
    Peer_Addr : Sock_Addr_Type;
 
-   Buffer : Stream_Element_Array (1 .. Snowpeak.Max_UDP_Payload_Size);
-   Last   : Stream_Element_Offset;
+   Buffer :
+     Stream_Element_Array
+       (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+   Last : Stream_Element_Offset;
 
    Listener : Snowpeak.Listener.Listener;
 begin
