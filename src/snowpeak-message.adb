@@ -8,12 +8,13 @@ package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
    package Packet renames RFLX.RFC1157_SNMP.Message;
 
-   function Write (Item :  Message) return Stream_Element_Array
+   function Write (Item : Message) return Stream_Element_Array
    is
       Buffer : Types.Bytes_Ptr :=
         new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
          Context : Packet.Context;
-      Res : Stream_Element_Array (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+      Res : Stream_Element_Array
+         (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Types.Bytes, Types.Bytes_Ptr);
@@ -40,24 +41,24 @@ package body Snowpeak.Message is
         (Types.Bytes, Types.Bytes_Ptr);
    begin
       declare
-         Bytes_Buffer : Types.Bytes_Ptr := new Types.Bytes'(To_RFLX_Bytes(Buffer(1..Last)));
-         Size : constant Byte :=  Bytes_Buffer.all(2);
+         Bytes_Buffer : Types.Bytes_Ptr := new Types.Bytes'(To_RFLX_Bytes
+            (Buffer (1 .. Last)));
+         Size : constant Integer :=  Integer (Bytes_Buffer.all (2));
+
+         Res : Message;
       begin
-         -- Ada.Text_IO.Put_Line("BYTES_BUFFER: " & Bytes_Buffer.all'Image);
-         Packet.Initialize (Context, Bytes_Buffer, Written_Last => 8 * 2 + Bit_Length(8 * Size));
+         pragma Assert (Size < 128);
+         --  ... so that it's actually a 7-bit length.
+         Packet.Initialize (Context, Bytes_Buffer,
+            Written_Last => 8 * 2 + Bit_Length (8 * Size));
          Packet.Verify_Message (Context);
-         -- Ada.Text_IO.Put_Line("PACKET: " & Context'Image);
          pragma Assert (Packet.Structural_Valid_Message (Context));
+         --  TODO: Add some error handling.
+
          declare
-            Size1 : constant Message_Size_Type := Message_Size_Type(Size);
-            Str_Bytes : Types.Bytes (1.. Types.Index(Size1));
+            Version : Types.Bytes := Packet.Get_Untagged_Value_version_Untagged_Value (Context);
          begin
-            Packet.Get_Str (Context, Str_Bytes);
-            Free (Bytes_Buffer);
-            -- Ada.Text_IO.Put_Line("STR_BYTES: " & Str_Bytes'Image);
-            return (Size => Size1, Str => [for C of Str_Bytes => Character'Val (C)]);
-            -- NOTE: Returning to the Secondary Stack.
-            -- https://docs.adacore.com/gnat_ugx-docs/html/gnat_ugx/gnat_ugx/the_stacks.html
+            null;
          end;
      end;
    end Read;
