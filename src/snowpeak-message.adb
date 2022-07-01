@@ -3,6 +3,7 @@ with Snowpeak.Compat; use Snowpeak.Compat;
 with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFLX_Types;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
+with System.Unsigned_Types; use System.Unsigned_Types;
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
@@ -31,6 +32,15 @@ package body Snowpeak.Message is
    end Write;
    -- https://stackoverflow.com/a/22770989
 
+   function From_BE_Bytes (Raw : Types.Bytes) return Integer is
+      Res : Integer := Integer (Raw (Raw'First));
+   begin
+      for I in Raw'First + 1 .. Raw'Last loop
+         Res := @ * (2 ** 8) + Integer (Raw (I));
+      end loop;
+      return Res;
+   end From_BE_Bytes;
+
    function Read
      (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)
       return Message
@@ -55,11 +65,31 @@ package body Snowpeak.Message is
          pragma Assert (Packet.Structural_Valid_Message (Context));
          --  TODO: Add some error handling.
 
+         --  version: int
          declare
-            Version : Types.Bytes := Packet.Get_Untagged_Value_version_Untagged_Value (Context);
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_Untagged_Value_version_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
          begin
-            null;
+            Packet.Get_Untagged_Value_version_Untagged_Value (Context, Buffer);
+            Res.Version := From_BE_Bytes (Buffer);
          end;
-     end;
+
+         --  community: Bytes
+         declare
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_Untagged_Value_community_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
+         begin
+            Packet.Get_Untagged_Value_community_Untagged_Value
+               (Context, Buffer);
+            Res.Community := To_Unbounded_String
+               ([for C of Buffer => Character'Val (C)]);
+         end;
+
+         --  TODO: Add more fields.
+
+         return Res;
+      end;
    end Read;
 end Snowpeak.Message;
