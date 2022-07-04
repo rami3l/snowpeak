@@ -8,7 +8,7 @@ package body Snowpeak.Listener is
       Put_Line ("Listener: Creating socket and setting up...");
       Create_Socket (Res.Channel, Mode => Socket_Datagram);
       Set_Socket_Option (Res.Channel, Socket_Level, (Reuse_Address, True));
-      Put_Line ("Listener: Binding socket...");
+      Put_Line ("Listener: Listening on " & Res.Addr'Image);
       Bind_Socket (Res.Channel, Res.Addr);
    end Bind;
 
