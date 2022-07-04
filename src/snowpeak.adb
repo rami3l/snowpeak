@@ -6,27 +6,35 @@ with Snowpeak.Message; use Snowpeak.Message;
 with Snowpeak;
 
 procedure Main is
+   Agent_Port : constant Port_Type := 10161;
+   --  Changed from 161 to 10161 to avoid Linux permission issues.
    Agent_Addr : constant Sock_Addr_Type :=
-     (Addr => Inet_Addr ("127.0.0.1"), Port => 161, others => <>);
+     (Addr => Inet_Addr ("127.0.0.1"), Port => Agent_Port, others => <>);
    Peer_Addr : Sock_Addr_Type;
 
-   Buffer :
-     Stream_Element_Array
+   Buffer : Stream_Element_Array
        (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
    Last : Stream_Element_Offset;
 
    Listener : Snowpeak.Listener.Listener;
 begin
+   Put_Line ("=== Hello from Snowpeak! ===");
    Snowpeak.Listener.Bind (Agent_Addr, Listener);
 
    loop
       Receive_Socket (Listener.Channel, Buffer, Last, From => Peer_Addr);
+      Put_Line ("Datagram Received.");
       declare
-         Got : constant Message := Read (Buffer, Last);
+         Got : Message;
       begin
-         Put_Line ("Agent Received: " & Got'Image);
+         Got := Read (Buffer, Last);
+         Put_Line ("Received Message: " & Got'Image);
          --  TODO: Instead of echoing, should send a proper response.
-         Send_Socket (Listener.Channel, Write (Got), Last, To => Peer_Addr);
+         --  Send_Socket (Listener.Channel, Write (Got), Last, To => Peer_Addr);
+      exception
+         when Constraint_Error =>
+            Put_Line ("Invalid Buffer detected!");
+            Put_Line ("Got: " & Buffer'Image);
       end;
    end loop;
 end Main;
