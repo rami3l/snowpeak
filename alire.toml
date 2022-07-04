@@ -6,7 +6,7 @@ authors = ["rami3l"]
 maintainers = ["rami3l <rami3l@outlook.com>"]
 maintainers-logins = ["rami3l"]
 
-executables = ["snowpeak"]
+executables = ["main"]
 
 [build-switches]
 "*".ada_version = "Ada2022"
