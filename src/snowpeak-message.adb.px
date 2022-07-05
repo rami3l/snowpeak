@@ -70,7 +70,7 @@ def get_field(rflx_field, assignment):
          declare
             Size : constant Types.Bit_Length := Packet.Field_Size
                (Context, Packet.F_{rflx_field});
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
          begin
             Packet.Get_{rflx_field} (Context, Buffer);
             {assignment}
@@ -79,12 +79,38 @@ def get_field(rflx_field, assignment):
 )
 
          --  version: int
-$(get_field("Untagged_Value_version_Untagged_Value", "Res.Version := From_BE_Bytes (Buffer);"))
+$(get_field(
+   "Untagged_Value_version_Untagged_Value",
+   "Res.Version := From_BE_Bytes (Buffer);",
+))
 
          --  community: Bytes
-$(get_field("Untagged_Value_community_Untagged_Value", "Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);"))
+$(get_field(
+   "Untagged_Value_community_Untagged_Value",
+   "Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);"
+))
 
-         --  TODO: Add more fields.
+         --  TODO: Support get-next-request?
+
+         --  data_get_request@request_id: int
+$(get_field(
+   "Untagged_Value_data_get_request_Value_request_id_Untagged_Value",
+   "Res.Data.Request_ID := From_BE_Bytes (Buffer);",
+))
+
+         --  data_get_request@error_status: int
+$(get_field(
+   "Untagged_Value_data_get_request_Value_error_status_Untagged_Value",
+   "Res.Data.Error_Status := From_BE_Bytes (Buffer);",
+))
+
+         --  data_get_request@error_index: int
+$(get_field(
+   "Untagged_Value_data_get_request_Value_error_index_Untagged_Value",
+   "Res.Data.Error_Index := From_BE_Bytes (Buffer);",
+))
+
+         --  TODO: Add Varbinds
 
          return Res;
       end;
