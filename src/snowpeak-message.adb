@@ -69,7 +69,7 @@ package body Snowpeak.Message is
          declare
             Size : constant Types.Bit_Length := Packet.Field_Size
                (Context, Packet.F_Untagged_Value_version_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
          begin
             Packet.Get_Untagged_Value_version_Untagged_Value (Context, Buffer);
             Res.Version := From_BE_Bytes (Buffer);
@@ -79,13 +79,45 @@ package body Snowpeak.Message is
          declare
             Size : constant Types.Bit_Length := Packet.Field_Size
                (Context, Packet.F_Untagged_Value_community_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
          begin
             Packet.Get_Untagged_Value_community_Untagged_Value (Context, Buffer);
             Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);
          end;
 
-         --  TODO: Add more fields.
+         --  TODO: Support get-next-request?
+
+         --  data_get_request@request_id: int
+         declare
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_Untagged_Value_data_get_request_Value_request_id_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+         begin
+            Packet.Get_Untagged_Value_data_get_request_Value_request_id_Untagged_Value (Context, Buffer);
+            Res.Data.Request_ID := From_BE_Bytes (Buffer);
+         end;
+
+         --  data_get_request@error_status: int
+         declare
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_Untagged_Value_data_get_request_Value_error_status_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+         begin
+            Packet.Get_Untagged_Value_data_get_request_Value_error_status_Untagged_Value (Context, Buffer);
+            Res.Data.Error_Status := From_BE_Bytes (Buffer);
+         end;
+
+         --  data_get_request@error_index: int
+         declare
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_Untagged_Value_data_get_request_Value_error_index_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+         begin
+            Packet.Get_Untagged_Value_data_get_request_Value_error_index_Untagged_Value (Context, Buffer);
+            Res.Data.Error_Index := From_BE_Bytes (Buffer);
+         end;
+
+         --  TODO: Add Varbinds
 
          return Res;
       end;
