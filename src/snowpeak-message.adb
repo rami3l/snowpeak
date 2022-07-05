@@ -2,12 +2,16 @@ pragma Style_Checks ("N");
 
 with Snowpeak.Compat; use Snowpeak.Compat;
 with RFLX.RFC1157_SNMP.Message;
+with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
+with RFLX.RFC1157_SNMP.VarBind;
 with RFLX.RFLX_Types;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
    package Packet renames RFLX.RFC1157_SNMP.Message;
+   package Varbind_Seq renames RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
+   package Varbind_Packet renames RFLX.RFC1157_SNMP.Varbind;
 
    -- function Write (Item : Message) return Stream_Element_Array
    -- is
@@ -48,13 +52,12 @@ package body Snowpeak.Message is
       return Message
    is
       Context : Packet.Context;
+      Res : Message;
    begin
       declare
          Bytes_Buffer : Types.Bytes_Ptr := new Types.Bytes'(To_RFLX_Bytes
             (Buffer (1 .. Last)));
          Size : constant Integer :=  Integer (Bytes_Buffer.all (2));
-
-         Res : Message;
       begin
          pragma Assert (Size < 128);
          --  ... so that it's actually a 7-bit length.
@@ -118,7 +121,33 @@ package body Snowpeak.Message is
          end;
 
          --  TODO: Add Varbinds
+         declare
+            Varbind_Seq_Context : Varbind_Seq.Context;
+            Varbind_Context : Varbind_Packet.Context;
+         begin
+            Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
+               (Context, Varbind_Seq_Context);
+            while Varbind_Seq.Has_Element (Varbind_Seq_Context) loop
+               declare
+                  Element : Varbind;
+               begin
+                  Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
+                  Varbind_Packet.Verify_Message (Varbind_Context);
 
+                  declare
+                     Size : constant Types.Bit_Length := Varbind_Packet.Field_Size
+                        (Varbind_Context, Varbind_Packet.F_Untagged_Value_name_Untagged_Value);
+                     Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+                  begin
+                     Varbind_Packet.Get_Untagged_Value_name_Untagged_Value (Varbind_Context, Buffer);
+                     for C of Buffer loop Element.OID.Append (Integer (C)); end loop;
+                  end;
+
+                  Res.Data.Variable_Bindings.Append (Element);
+                  Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
+               end;
+            end loop;
+         end;
          return Res;
       end;
    end Read;
