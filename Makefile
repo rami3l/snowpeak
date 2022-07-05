@@ -27,12 +27,16 @@ $(GENERATED_DIR): $(SPECS_DIR)
 .PHONY: generate
 generate: $(GENERATED_DIR)
 
+.PHONY: expand
+expand:
+	sh -c 'for f in $$(find . -name "*.px"); do expander.py -af $$f > $$(dirname $$f)/$$(basename $$f .px); done'
+
 .PHONY: build
-build: generate
+build: generate expand
 	alr build
 
 .PHONY: run
-run: generate
+run: generate expand
 	alr run
 
 .PHONY: clean

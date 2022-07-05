@@ -64,26 +64,25 @@ package body Snowpeak.Message is
          pragma Assert (Packet.Structural_Valid_Message (Context));
          --  TODO: Add some error handling.
 
+$py(
+def get_field(rflx_field, assignment):
+   return f"""\
+         declare
+            Size : constant Types.Bit_Length := Packet.Field_Size
+               (Context, Packet.F_{rflx_field});
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
+         begin
+            Packet.Get_{rflx_field} (Context, Buffer);
+            {assignment}
+         end;\
+"""
+)
 
          --  version: int
-         declare
-            Size : constant Types.Bit_Length := Packet.Field_Size
-               (Context, Packet.F_Untagged_Value_version_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
-         begin
-            Packet.Get_Untagged_Value_version_Untagged_Value (Context, Buffer);
-            Res.Version := From_BE_Bytes (Buffer);
-         end;
+$(get_field("Untagged_Value_version_Untagged_Value", "Res.Version := From_BE_Bytes (Buffer);"))
 
          --  community: Bytes
-         declare
-            Size : constant Types.Bit_Length := Packet.Field_Size
-               (Context, Packet.F_Untagged_Value_community_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size + 1));
-         begin
-            Packet.Get_Untagged_Value_community_Untagged_Value (Context, Buffer);
-            Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);
-         end;
+$(get_field("Untagged_Value_community_Untagged_Value", "Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);"))
 
          --  TODO: Add more fields.
 
