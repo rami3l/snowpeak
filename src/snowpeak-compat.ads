@@ -9,14 +9,12 @@ is
    use type RFLX.RFLX_Builtin_Types.Index;
 
    function To_Ada_Stream
-     (Buffer : RFLX.RFLX_Builtin_Types.Bytes)
-      return Stream_Element_Array with
+     (Buffer : RFLX.RFLX_Builtin_Types.Bytes) return Stream_Element_Array with
       Pre => Buffer'First = 1
       and then Buffer'Length <= Stream_Element_Offset'Last;
 
    function To_RFLX_Bytes
-     (Buffer : Stream_Element_Array)
-      return RFLX.RFLX_Builtin_Types.Bytes with
+     (Buffer : Stream_Element_Array) return RFLX.RFLX_Builtin_Types.Bytes with
       Pre => Buffer'First = 1
       and then Buffer'Length <=
         Stream_Element_Offset (RFLX.RFLX_Builtin_Types.Index'Last);

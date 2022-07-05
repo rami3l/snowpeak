@@ -1,10 +1,11 @@
--- SRC: https://github.com/Componolit/RecordFlux/blob/5dd82231eec29a98a25fe67153a3bd03ccd5d3d0/examples/apps/dhcp_client/src/channel.adb
+--  SRC: https://github.com/Componolit/RecordFlux/blob/5dd82231eec29a98a25fe67153a3bd03ccd5d3d0/examples/apps/dhcp_client/src/channel.adb
 
 package body Snowpeak.Compat with
    SPARK_Mode
 is
    --  ISSUE: Componolit/RecordFlux#482
-   --  Ada.Streams.Stream_Element_Array is not yet supported as buffer type and thus a conversion is needed.
+   --  Ada.Streams.Stream_Element_Array is not yet supported
+   --  as buffer type and thus a conversion is needed.
 
    function To_Ada_Stream
      (Buffer : RFLX.RFLX_Builtin_Types.Bytes)
