@@ -5,7 +5,6 @@ with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
 with RFLX.RFC1157_SNMP.VarBind;
 with RFLX.RFLX_Types;
-with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
@@ -85,7 +84,7 @@ package body Snowpeak.Message is
             Buffer : Types.Bytes (1 .. Types.To_Index (Size));
          begin
             Packet.Get_Untagged_Value_community_Untagged_Value (Context, Buffer);
-            Res.Community := To_Unbounded_String ([for C of Buffer => Character'Val (C)]);
+            for C of Buffer loop Res.Community.Push (C); end loop;
          end;
 
          --  TODO: Support get-next-request?
@@ -140,10 +139,10 @@ package body Snowpeak.Message is
                      Buffer : Types.Bytes (1 .. Types.To_Index (Size));
                   begin
                      Varbind_Packet.Get_Untagged_Value_name_Untagged_Value (Varbind_Context, Buffer);
-                     for C of Buffer loop Element.OID.Append (Integer (C)); end loop;
+                     for C of Buffer loop Element.OID.Push (Integer (C)); end loop;
                   end;
 
-                  Res.Data.Variable_Bindings.Append (Element);
+                  Res.Data.Variable_Bindings.Push (Element);
                   Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
                end;
             end loop;

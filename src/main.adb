@@ -22,7 +22,7 @@ begin
    Snowpeak.Listener.Bind (Agent_Addr, Listener);
 
    loop
-      Receive_Socket (Listener.Channel, Buffer, Last, From => Peer_Addr);
+      Listener.Receive (Buffer, Last, Peer_Addr);
       Put_Line ("Datagram Received.");
       declare
          Got : Message;
