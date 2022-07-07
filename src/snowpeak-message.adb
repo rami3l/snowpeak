@@ -38,12 +38,14 @@ package body Snowpeak.Message is
    -- --  https://stackoverflow.com/a/22770989
 
    function From_BE_Bytes (Raw : Types.Bytes) return I64 is
-      Res : I64 := I64 (Raw (Raw'First));
+      First : constant Types.Byte := Raw (Raw'First);
+      Res   : I64                 := I64 (First mod 2**7);
+      Pos   : constant Boolean    := First / (2**7) = 0;
    begin
       for I in Raw'First + 1 .. Raw'Last loop
-         Res := @ * (2 ** 8) + I64 (Raw (I));
+         Res := @ * (2**8) + I64 (Raw (I));
       end loop;
-      return Res;
+      return (if Pos then Res else Res - 2**(8 * Raw'Length - 1));
    end From_BE_Bytes;
 
    function Read
