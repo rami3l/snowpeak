@@ -25,4 +25,12 @@ package body Stacks is
          Self.Container (Self.Top) := V;
       end if;
    end Push;
+
+   procedure Put_Image
+     (Buffer : in out Ada.Strings.Text_Buffers.Root_Buffer_Type'Class;
+      Arg    :        Stack)
+   is
+   begin
+      Buffer.Put (Arg.Container (Min .. Arg.Top)'Image);
+   end Put_Image;
 end Stacks;

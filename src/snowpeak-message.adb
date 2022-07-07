@@ -119,7 +119,6 @@ package body Snowpeak.Message is
             Res.Data.Error_Index := From_BE_Bytes (Buffer);
          end;
 
-         --  TODO: Add Varbinds
          declare
             Varbind_Seq_Context : Varbind_Seq.Context;
             Varbind_Context : Varbind_Packet.Context;

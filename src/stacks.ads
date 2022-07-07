@@ -1,3 +1,5 @@
+with Ada.Strings.Text_Buffers;
+
 generic
    Max : Positive;
    type T is private;
@@ -16,6 +18,12 @@ private
    type Stack is tagged record
       Container : Stack_Array (Min .. Max);
       Top       : Natural := Min - 1;
-   end record;
+   end record with
+      Put_Image => Put_Image;
+      --  http://www.ada-auth.org/standards/2xrm/html/RM-4-10.html
+
+   procedure Put_Image
+     (Buffer : in out Ada.Strings.Text_Buffers.Root_Buffer_Type'Class;
+      Arg    :        Stack);
 end Stacks;
 --  https://learn.adacore.com/courses/intro-to-ada/chapters/generics.html#example-adts
