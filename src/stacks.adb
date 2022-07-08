@@ -1,4 +1,6 @@
 package body Stacks is
+   function Length(Self: Stack) return Natural is (Self.Top + 1 - Self.Container'First);
+   function View(Self: Stack) return Stack_Array is (Self.Container(Min .. Self.Top)); 
    function Is_Empty (Self : Stack) return Boolean is
      (Self.Top < Self.Container'First);
    function Is_Full (Self : Stack) return Boolean is
@@ -31,6 +33,6 @@ package body Stacks is
       Arg    :        Stack)
    is
    begin
-      Buffer.Put (Arg.Container (Min .. Arg.Top)'Image);
+      Buffer.Put (Arg.View'Image);
    end Put_Image;
 end Stacks;
