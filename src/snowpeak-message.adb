@@ -11,6 +11,36 @@ package body Snowpeak.Message is
    package Packet renames RFLX.RFC1157_SNMP.Message;
    package Varbind_Seq renames RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
    package Varbind_Packet renames RFLX.RFC1157_SNMP.Varbind;
+   
+   --  HACK: We assume here that the T and L fields in the TLV encoding are both of 1 byte.
+
+   function I64_Length (I: I64) return Short_Length is
+      J: I64 := (if I < 0 then I + 1 else I);
+      Bits : Short_Length := 1;
+   begin
+      loop
+         J := J / 2;
+         if J = 0 then
+            return Bits / 8 + 1;
+         end if;
+         Bits := Bits + 1;
+      end loop;
+   end I64_Length;
+   --  https://github.com/eerimoq/asn1tools/blob/44746200179038edc7d0895b03c5c0bb58285e43/asn1tools/codecs/ber.py#L253-L255
+
+   function Length (Self : Varbind) return Short_Length is
+      (Short_Length (Self.OID.Length + 2 + Self.Variable.Length + 2));
+
+   function Length (Self : PDU) return Short_Length is
+      (Short_Length (I64_Length(Self.Request_ID) + 2
+         + I64_Length(Self.Error_Status) + 2
+         + I64_Length(Self.Error_Index) + 2
+         + [for V of Self.Variable_Bindings.View => V.Length]'Reduce("+", 0) + 2));
+
+   function Length (Self : Message) return Short_Length is
+      (Short_Length (I64_Length(Self.Version) + 2
+         + Self.Community.Length + 2
+         + Self.Data.Length + 2));
 
    -- function Write (Item : Message) return Stream_Element_Array
    -- is
@@ -22,7 +52,11 @@ package body Snowpeak.Message is
 
    --    procedure Free is new Ada.Unchecked_Deallocation
    --      (Types.Bytes, Types.Bytes_Ptr);
-   -- begin
+  pragma Style_Checks ("N");
+
+with Snowpeak.Compat; use Snowpeak.Compat;
+with RFLX.RFC1157_SNMP.Message;
+with RFLX.RFC1157_SNMP.Asn_Raw_SEQ -- begin
    --    Packet.Initialize (Context, Buffer);
 
    --    Packet.Set_Size (Context, Str_Size (Item.Size));
