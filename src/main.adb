@@ -30,6 +30,7 @@ begin
       begin
          Got := Read (Buffer, Last);
          Put_Line ("Received Message: " & Got'Image);
+         Put_Line ("Message Length: " & Got.Length'Image);
          --  TODO: Instead of echoing, should send a proper response.
          --  Send_Socket (Listener.Channel, Write (Got), Last, To => Peer_Addr);
       exception

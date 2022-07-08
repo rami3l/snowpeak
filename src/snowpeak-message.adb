@@ -29,18 +29,26 @@ package body Snowpeak.Message is
    --  https://github.com/eerimoq/asn1tools/blob/44746200179038edc7d0895b03c5c0bb58285e43/asn1tools/codecs/ber.py#L253-L255
 
    function Length (Self : Varbind) return Short_Length is
-      (Short_Length (Self.OID.Length + 2 + Self.Variable.Length + 2));
+     (Short_Length (Self.OID.Length + Self.Variable.Length) + 2 * 2);
 
    function Length (Self : PDU) return Short_Length is
-      (Short_Length (I64_Length(Self.Request_ID) + 2
-         + I64_Length(Self.Error_Status) + 2
-         + I64_Length(Self.Error_Index) + 2
-         + [for V of Self.Variable_Bindings.View => V.Length]'Reduce("+", 0) + 2));
+      Res : Short_Length :=
+        Short_Length
+          (I64_Length (Self.Request_ID) + I64_Length (Self.Error_Status) +
+           I64_Length (Self.Error_Index)) +
+        4 * 2;
+      --  + [for V of Self.Variable_Bindings.View => V.Length + 2]'Reduce("+", 0)
+   begin
+      --  HACK: Workaround for compiler internal error in version `23.0w-20220508`.
+      for V of Self.Variable_Bindings.View loop
+         Res := @ + V.Length + 2;
+      end loop;
+      return Res;
+   end Length;
 
    function Length (Self : Message) return Short_Length is
-      (Short_Length (I64_Length(Self.Version) + 2
-         + Self.Community.Length + 2
-         + Self.Data.Length + 2));
+     (I64_Length (Self.Version) + Short_Length (Self.Community.Length) +
+      Self.Data.Length + 3 * 2);
 
    -- function Write (Item : Message) return Stream_Element_Array
    -- is
