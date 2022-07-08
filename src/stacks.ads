@@ -8,8 +8,8 @@ package Stacks is
    type Stack_Array is array (Natural range <>) of T;
 
    Stack_Underflow, Stack_Overflow : exception;
-   function Length(Self: Stack) return Natural;
-   function View(Self: Stack) return Stack_Array;
+   function Length (Self : Stack) return Natural;
+   function View (Self : Stack) return Stack_Array;
    function Is_Empty (Self : Stack) return Boolean;
    function Pop (Self : in out Stack) return T;
    procedure Push (Self : in out Stack; V : T);

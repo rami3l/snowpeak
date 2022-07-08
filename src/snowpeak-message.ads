@@ -1,4 +1,4 @@
-with Ada.Streams; use Ada.Streams;
+with Ada.Streams;             use Ada.Streams;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 with Stacks;
 
@@ -9,7 +9,7 @@ package Snowpeak.Message is
    type Short_Length is mod 2**7;
    type I64 is range -(2**63) .. (2**63 - 1);
 
-   function I64_Length (I: I64) return Short_Length;
+   function I64_Length (I : I64) return Short_Length;
 
    type Varbind is tagged record
       OID      : Integers.Stack;
