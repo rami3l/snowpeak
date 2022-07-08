@@ -6,13 +6,14 @@ with Snowpeak.Message; use Snowpeak.Message;
 with Snowpeak;
 
 procedure Main is
-   Agent_Port : constant Port_Type := 10161;
+   Agent_Port : constant Port_Type := 10_161;
    --  Changed from 161 to 10161 to avoid Linux permission issues.
    Agent_Addr : constant Sock_Addr_Type :=
      (Addr => Inet_Addr ("127.0.0.1"), Port => Agent_Port, others => <>);
    Peer_Addr : Sock_Addr_Type;
 
-   Buffer : Stream_Element_Array
+   Buffer :
+     Stream_Element_Array
        (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
    Last : Stream_Element_Offset;
 

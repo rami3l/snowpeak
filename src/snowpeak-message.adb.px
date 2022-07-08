@@ -54,9 +54,7 @@ package body Snowpeak.Message is
    --      (Types.Bytes, Types.Bytes_Ptr);
   pragma Style_Checks ("N");
 
-with Snowpeak.Compat; use Snowpeak.Compat;
-with RFLX.RFC1157_SNMP.Message;
-with RFLX.RFC1157_SNMP.Asn_Raw_SEQ -- begin
+   -- begin
    --    Packet.Initialize (Context, Buffer);
 
    --    Packet.Set_Size (Context, Str_Size (Item.Size));

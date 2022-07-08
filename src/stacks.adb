@@ -1,6 +1,8 @@
 package body Stacks is
-   function Length(Self: Stack) return Natural is (Self.Top + 1 - Self.Container'First);
-   function View(Self: Stack) return Stack_Array is (Self.Container(Min .. Self.Top)); 
+   function Length (Self : Stack) return Natural is
+     (Self.Top + 1 - Self.Container'First);
+   function View (Self : Stack) return Stack_Array is
+     (Self.Container (Min .. Self.Top));
    function Is_Empty (Self : Stack) return Boolean is
      (Self.Top < Self.Container'First);
    function Is_Full (Self : Stack) return Boolean is
