@@ -43,7 +43,7 @@ package Snowpeak.Message is
 
    type Message_Access is access Message;
 
-   -- function Write (Item : Message) return Stream_Element_Array;
+   function Write (Item : Message) return Stream_Element_Array;
 
    function Read
      (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)

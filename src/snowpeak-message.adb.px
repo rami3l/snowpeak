@@ -5,8 +5,14 @@ with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
 with RFLX.RFC1157_SNMP.VarBind;
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
+with RFLX.Prelude;
 with RFLX.RFLX_Types;
 with System;
+
+$py(
+from textwrap import indent
+)
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
@@ -71,31 +77,61 @@ package body Snowpeak.Message is
      (I64_Length (Self.Version) + Short_Length (Self.Community.Length) +
       Self.Data.Length + 3 * 2);
 
-   -- function Write (Item : Message) return Stream_Element_Array
-   -- is
-   --    Buffer : Types.Bytes_Ptr :=
-   --      new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
-   --       Context : Packet.Context;
-   --    Res : Stream_Element_Array
-   --       (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+   function Write (Item : Message) return Stream_Element_Array is
+      Buffer : Types.Bytes_Ptr :=
+        new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
+      Context : Packet.Context;
+      Res     :
+        Stream_Element_Array
+          (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
 
-   --    procedure Free is new Ada.Unchecked_Deallocation
-   --      (Types.Bytes, Types.Bytes_Ptr);
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Types.Bytes, Types.Bytes_Ptr);
+   begin
+      Packet.Initialize (Context, Buffer);
 
-   -- begin
-   --    Packet.Initialize (Context, Buffer);
+$py(
+def set_field(
+   rflx_field,
+   tag_class,
+   tag_form,
+   tag_num,
+   length,
+   value="",
+   packet="Packet",
+   context="Context"
+):
+   if rflx_field:
+      rflx_field += "_"
 
-   --    Packet.Set_Size (Context, Str_Size (Item.Size));
-   --    if Item.Size /= 0 then
-   --       Packet.Set_Str (Context, [for C of Item.Str => Character'Pos (C)]);
-   --    end if;
+   res = f"""\
+      {packet}.Set_{rflx_field}Tag_Class ({context}, RFLX.Prelude.Asn_Tag_Class ({tag_class}));
+      {packet}.Set_{rflx_field}Tag_Form ({context}, RFLX.Prelude.Asn_Tag_Form ({tag_form}));
+      {packet}.Set_{rflx_field}Tag_Num ({context}, RFLX.Prelude.Asn_Tag_Num ({tag_num}));
+      {packet}.Set_{rflx_field}Untagged_Length ({context}, RFLX.Prelude.Asn_Length ({length}));\
+"""
 
-   --    Packet.Take_Buffer (Context, Buffer);
-   --    Res := To_Ada_Stream (Buffer.all);
-   --    Free (Buffer);
-   --    return Res;
-   -- end Write;
-   -- --  https://stackoverflow.com/a/22770989
+   if value:
+      res += f"""
+      {packet}.Set_{rflx_field}Untagged_Value ({context}, {value});\
+"""
+
+   return res
+)
+
+$(set_field("", "0", "1", "16", "Item.Length"))
+
+$(set_field(
+   "Untagged_Value_version",
+   "0", "0", "2","I64_Length (Item.Version)", "To_BE_Bytes (Item.Version)",
+))
+
+      Packet.Take_Buffer (Context, Buffer);
+      Res := To_Ada_Stream (Buffer.all);
+      Free (Buffer);
+      return Res;
+   end Write;
+   --  https://stackoverflow.com/a/22770989
 
    function From_BE_Bytes (Raw : Types.Bytes) return I64 is
       First : constant Types.Byte := Raw (Raw'First);
@@ -129,16 +165,15 @@ package body Snowpeak.Message is
          --  TODO: Add some error handling.
 
 $py(
-from textwrap import indent
-
 def get_field(rflx_field, assignment, packet="Packet", context="Context"):
+   untagged_value = f"{rflx_field}_Untagged_Value"
    return f"""\
          declare
             Size : constant Types.Bit_Length := {packet}.Field_Size
-               ({context}, {packet}.F_{rflx_field});
+               ({context}, {packet}.F_{untagged_value});
             Buffer : Types.Bytes (1 .. Types.To_Index (Size));
          begin
-            {packet}.Get_{rflx_field} ({context}, Buffer);
+            {packet}.Get_{untagged_value} ({context}, Buffer);
             {assignment}
          end;\
 """
@@ -146,13 +181,13 @@ def get_field(rflx_field, assignment, packet="Packet", context="Context"):
 
          --  version: int
 $(get_field(
-   "Untagged_Value_version_Untagged_Value",
+   "Untagged_Value_version",
    "Res.Version := From_BE_Bytes (Buffer);",
 ))
 
          --  community: Bytes
 $(get_field(
-   "Untagged_Value_community_Untagged_Value",
+   "Untagged_Value_community",
    "for C of Buffer loop Res.Community.Push (C); end loop;"
 ))
 
@@ -160,19 +195,19 @@ $(get_field(
 
          --  data_get_request@request_id: int
 $(get_field(
-   "Untagged_Value_data_get_request_Value_request_id_Untagged_Value",
+   "Untagged_Value_data_get_request_Value_request_id",
    "Res.Data.Request_ID := From_BE_Bytes (Buffer);",
 ))
 
          --  data_get_request@error_status: int
 $(get_field(
-   "Untagged_Value_data_get_request_Value_error_status_Untagged_Value",
+   "Untagged_Value_data_get_request_Value_error_status",
    "Res.Data.Error_Status := From_BE_Bytes (Buffer);",
 ))
 
          --  data_get_request@error_index: int
 $(get_field(
-   "Untagged_Value_data_get_request_Value_error_index_Untagged_Value",
+   "Untagged_Value_data_get_request_Value_error_index",
    "Res.Data.Error_Index := From_BE_Bytes (Buffer);",
 ))
 
@@ -190,7 +225,7 @@ $(get_field(
                   Varbind_Packet.Verify_Message (Varbind_Context);
 
 $(indent(get_field(
-   "Untagged_Value_name_Untagged_Value",
+   "Untagged_Value_name",
    "for C of Buffer loop Element.OID.Push (Integer (C)); end loop;",
    packet="Varbind_Packet",
    context="Varbind_Context",
