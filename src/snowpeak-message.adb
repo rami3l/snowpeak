@@ -5,8 +5,11 @@ with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
 with RFLX.RFC1157_SNMP.VarBind;
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
+with RFLX.Prelude;
 with RFLX.RFLX_Types;
 with System;
+
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
@@ -71,31 +74,37 @@ package body Snowpeak.Message is
      (I64_Length (Self.Version) + Short_Length (Self.Community.Length) +
       Self.Data.Length + 3 * 2);
 
-   -- function Write (Item : Message) return Stream_Element_Array
-   -- is
-   --    Buffer : Types.Bytes_Ptr :=
-   --      new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
-   --       Context : Packet.Context;
-   --    Res : Stream_Element_Array
-   --       (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+   function Write (Item : Message) return Stream_Element_Array is
+      Buffer : Types.Bytes_Ptr :=
+        new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
+      Context : Packet.Context;
+      Res     :
+        Stream_Element_Array
+          (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
 
-   --    procedure Free is new Ada.Unchecked_Deallocation
-   --      (Types.Bytes, Types.Bytes_Ptr);
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Types.Bytes, Types.Bytes_Ptr);
+   begin
+      Packet.Initialize (Context, Buffer);
 
-   -- begin
-   --    Packet.Initialize (Context, Buffer);
 
-   --    Packet.Set_Size (Context, Str_Size (Item.Size));
-   --    if Item.Size /= 0 then
-   --       Packet.Set_Str (Context, [for C of Item.Str => Character'Pos (C)]);
-   --    end if;
+      Packet.Set_Tag_Class (Context, RFLX.Prelude.Asn_Tag_Class (0));
+      Packet.Set_Tag_Form (Context, RFLX.Prelude.Asn_Tag_Form (1));
+      Packet.Set_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (16));
+      Packet.Set_Untagged_Length (Context, RFLX.Prelude.Asn_Length (Item.Length));
 
-   --    Packet.Take_Buffer (Context, Buffer);
-   --    Res := To_Ada_Stream (Buffer.all);
-   --    Free (Buffer);
-   --    return Res;
-   -- end Write;
-   -- --  https://stackoverflow.com/a/22770989
+      Packet.Set_Untagged_Value_version_Tag_Class (Context, RFLX.Prelude.Asn_Tag_Class (0));
+      Packet.Set_Untagged_Value_version_Tag_Form (Context, RFLX.Prelude.Asn_Tag_Form (0));
+      Packet.Set_Untagged_Value_version_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (2));
+      Packet.Set_Untagged_Value_version_Untagged_Length (Context, RFLX.Prelude.Asn_Length (I64_Length (Item.Version)));
+      Packet.Set_Untagged_Value_version_Untagged_Value (Context, To_BE_Bytes (Item.Version));
+
+      Packet.Take_Buffer (Context, Buffer);
+      Res := To_Ada_Stream (Buffer.all);
+      Free (Buffer);
+      return Res;
+   end Write;
+   --  https://stackoverflow.com/a/22770989
 
    function From_BE_Bytes (Raw : Types.Bytes) return I64 is
       First : constant Types.Byte := Raw (Raw'First);
