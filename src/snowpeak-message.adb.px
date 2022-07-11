@@ -4,18 +4,20 @@ with Snowpeak.Compat; use Snowpeak.Compat;
 with RFLX.RFC1157_SNMP.Message;
 with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
 with RFLX.RFC1157_SNMP.VarBind;
+with Ada.Unchecked_Conversion;
 with RFLX.RFLX_Types;
+with System;
 
 package body Snowpeak.Message is
    package Types renames RFLX.RFLX_Types;
    package Packet renames RFLX.RFC1157_SNMP.Message;
    package Varbind_Seq renames RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
    package Varbind_Packet renames RFLX.RFC1157_SNMP.Varbind;
-   
+
    --  HACK: We assume here that the T and L fields in the TLV encoding are both of 1 byte.
 
-   function I64_Length (I: I64) return Short_Length is
-      J: I64 := (if I < 0 then I + 1 else I);
+   function I64_Length (I : I64) return Short_Length is
+      J    : I64          := (if I < 0 then I + 1 else I);
       Bits : Short_Length := 1;
    begin
       loop
@@ -27,6 +29,25 @@ package body Snowpeak.Message is
       end loop;
    end I64_Length;
    --  https://github.com/eerimoq/asn1tools/blob/44746200179038edc7d0895b03c5c0bb58285e43/asn1tools/codecs/ber.py#L253-L255
+
+   function To_BE_Bytes (I : I64) return Types.Bytes is
+      type BE_I64 is record
+         Inner : I64;
+      end record with
+         Bit_Order            => System.High_Order_First,
+         Scalar_Storage_Order => System.High_Order_First;
+
+      for BE_I64 use record
+         Inner at 0 range 0 .. 63;
+      end record;
+
+      subtype I64_Bytes is Types.Bytes (1 .. 8);
+      function As_Bytes is new Ada.Unchecked_Conversion (BE_I64, I64_Bytes);
+
+      Len : constant Short_Length := I64_Length (I);
+   begin
+      return As_Bytes ((Inner => I)) (Types.Index (8 - Len + 1) .. 8);
+   end To_BE_Bytes;
 
    function Length (Self : Varbind) return Short_Length is
      (Short_Length (Self.OID.Length + Self.Variable.Length) + 2 * 2);
@@ -60,7 +81,6 @@ package body Snowpeak.Message is
 
    --    procedure Free is new Ada.Unchecked_Deallocation
    --      (Types.Bytes, Types.Bytes_Ptr);
-  pragma Style_Checks ("N");
 
    -- begin
    --    Packet.Initialize (Context, Buffer);
