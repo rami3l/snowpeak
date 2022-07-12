@@ -148,7 +148,7 @@ package body Snowpeak.Message is
          Varbind_Context : Varbind_Packet.Context;
       begin
          Packet.Switch_To_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
-               (Context, Varbind_Seq_Context);
+            (Context, Varbind_Seq_Context);
          for Element of Item.Data.Variable_Bindings.View loop
             Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
 
@@ -163,7 +163,7 @@ package body Snowpeak.Message is
             Varbind_Packet.Set_Untagged_Value_name_Untagged_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.OID.Length));
             Varbind_Packet.Set_Untagged_Value_name_Untagged_Value (Varbind_Context, Types.Bytes (Element.OID.View));
 
-      --  TODO!: Write `Element.Variable` to `Untagged_Value_value`.
+         --  TODO!: Write `Element.Variable` to `Untagged_Value_value`.
 
          end loop;
       end;
