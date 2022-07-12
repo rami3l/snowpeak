@@ -124,6 +124,11 @@ def integer(field):
 
 def octet_string(field):
    return ("0", "0", "4", f"{field}.Length", f"Types.Bytes ({field}.View)")
+
+def object_identifier(field):
+   return ("0", "0", "6", f"{field}.Length", f"Types.Bytes ({field}.View)")
+
+VARBIND_CONTEXT = {"packet": "Varbind_Packet", "context": "Varbind_Context"}
 )
 
 $(set_field("", *sequence("Item")))
@@ -163,6 +168,30 @@ $(set_field(
    "Untagged_Value_data_get_response_Value_variable_bindings",
    *sequence("Item.Data.Variable_Bindings"),
 ))
+
+      declare
+         Varbind_Seq_Context : Varbind_Seq.Context;
+         Varbind_Context : Varbind_Packet.Context;
+      begin
+         Packet.Switch_To_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
+               (Context, Varbind_Seq_Context);
+         for Element of Item.Data.Variable_Bindings.View loop
+            Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
+
+$(indent(
+   set_field("", *sequence("Element"), **VARBIND_CONTEXT),
+   "   "*2,
+))
+
+$(indent(
+   set_field("Untagged_Value_name", *object_identifier("Element.OID"), **VARBIND_CONTEXT),
+   "   "*2,
+))
+
+      --  TODO!: Write `Element.Variable` to `Untagged_Value_value`.
+
+         end loop;
+      end;
 
       Packet.Take_Buffer (Context, Buffer);
       Res := To_Ada_Stream (Buffer.all);
@@ -226,7 +255,7 @@ $(get_field(
          --  community: Bytes
 $(get_field(
    "Untagged_Value_community",
-   "for C of Buffer loop Res.Community.Push (C); end loop;"
+   "for C of Buffer loop Res.Community.Push (C); end loop;",
 ))
 
          --  TODO: Support get-next-request?
@@ -265,9 +294,8 @@ $(get_field(
 
 $(indent(get_field(
    "Untagged_Value_name",
-   "for C of Buffer loop Element.OID.Push (Integer (C)); end loop;",
-   packet="Varbind_Packet",
-   context="Varbind_Context",
+   "for C of Buffer loop Element.OID.Push (C); end loop;",
+   **VARBIND_CONTEXT,
 ), "   "*3))
 
                   Res.Data.Variable_Bindings.Push (Element);
