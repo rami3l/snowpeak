@@ -143,6 +143,31 @@ package body Snowpeak.Message is
       Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (16));
       Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Length (Context, RFLX.Prelude.Asn_Length (Item.Data.Variable_Bindings.Length));
 
+      declare
+         Varbind_Seq_Context : Varbind_Seq.Context;
+         Varbind_Context : Varbind_Packet.Context;
+      begin
+         Packet.Switch_To_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
+               (Context, Varbind_Seq_Context);
+         for Element of Item.Data.Variable_Bindings.View loop
+            Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
+
+            Varbind_Packet.Set_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
+            Varbind_Packet.Set_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (1));
+            Varbind_Packet.Set_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (16));
+            Varbind_Packet.Set_Untagged_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Length));
+
+            Varbind_Packet.Set_Untagged_Value_name_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
+            Varbind_Packet.Set_Untagged_Value_name_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
+            Varbind_Packet.Set_Untagged_Value_name_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (6));
+            Varbind_Packet.Set_Untagged_Value_name_Untagged_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.OID.Length));
+            Varbind_Packet.Set_Untagged_Value_name_Untagged_Value (Varbind_Context, Types.Bytes (Element.OID.View));
+
+      --  TODO!: Write `Element.Variable` to `Untagged_Value_value`.
+
+         end loop;
+      end;
+
       Packet.Take_Buffer (Context, Buffer);
       Res := To_Ada_Stream (Buffer.all);
       Free (Buffer);
@@ -254,7 +279,7 @@ package body Snowpeak.Message is
                      Buffer : Types.Bytes (1 .. Types.To_Index (Size));
                   begin
                      Varbind_Packet.Get_Untagged_Value_name_Untagged_Value (Varbind_Context, Buffer);
-                     for C of Buffer loop Element.OID.Push (Integer (C)); end loop;
+                     for C of Buffer loop Element.OID.Push (C); end loop;
                   end;
 
                   Res.Data.Variable_Bindings.Push (Element);
