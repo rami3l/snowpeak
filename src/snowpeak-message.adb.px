@@ -9,7 +9,6 @@ with RFLX.RFC1157_SNMP.Asn_Raw_SEQUENCE_OF_VarBind;
 with RFLX.RFC1157_SNMP.VarBind;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
-with RFLX.Prelude;
 with RFLX.RFLX_Types;
 with System;
 
@@ -58,8 +57,11 @@ package body Snowpeak.Message is
       return As_Bytes ((Inner => I)) (Types.Index (8 - Len + 1) .. 8);
    end To_BE_Bytes;
 
+   function Length (Self : TLV) return Short_Length is
+     (Short_Length (if Self.Data = null then 0 else Self.Data.all'Length));
+
    function Length (Self : Varbind) return Short_Length is
-     (Short_Length (Self.OID.Length + Self.Variable.Length) + 2 * 2);
+     (Short_Length (Self.OID.Length) + Self.Variable.Length + 2 * 2);
 
    function Length (Self : PDU) return Short_Length is
       Res : Short_Length :=
