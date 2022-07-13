@@ -1,8 +1,10 @@
 with Ada.Streams;             use Ada.Streams;
+with RFLX.Prelude;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 with Stacks;
 
 package Snowpeak.Message is
+   package Prelude renames RFLX.Prelude;
    package Bytes is new Stacks (32, Byte);
 
    type Short_Length is mod 2**7;
@@ -10,10 +12,19 @@ package Snowpeak.Message is
 
    function I64_Length (I : I64) return Short_Length;
 
+   type TLV is tagged record
+      Tag_Class : Prelude.Asn_Tag_Class := 0;
+      Tag_Form  : Prelude.Asn_Tag_Form  := 0;
+      Tag_Num   : Prelude.Asn_Tag_Num   := 5;
+      Data      : Bytes_Ptr;
+   end record;
+
+   function Length (Self : TLV) return Short_Length;
+
    type Varbind is tagged record
       OID      : Bytes.Stack;
-      Variable : Bytes.Stack; 
-      --  HACK: Now we assume that this field contains the V field of `Variable`'s 
+      Variable : TLV;
+      --  HACK: Now we assume that this field contains the V field of `Variable`'s
       --  ASN.1 BER encoding. (This influences the implementation of the `Length` method.)
       --  However, it seems necessary to include the T field as well.
       --  Ideally there should be a huge sum type as in https://docs.rs/snmp-parser/0.8.0/snmp_parser/snmp/enum.ObjectSyntax.html
