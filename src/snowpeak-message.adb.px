@@ -13,7 +13,7 @@ with RFLX.RFLX_Types;
 with System;
 
 $py(
-from textwrap import indent
+from textwrap import dedent, indent
 )
 
 package body Snowpeak.Message is
@@ -190,8 +190,56 @@ $(indent(
    "   "*2,
 ))
 
-         --  TODO!: Write `Element.Variable` to `Untagged_Value_value`.
+         --  Write `Element.Variable` to `Untagged_Value_value`.
+$py(
+VAR_FIELD = "Untagged_Value_value"
 
+def var_variant(class_, form, num, variant, set_data=True):
+   kwargs = {
+      "length": "Element.Variable.Length",
+      "variant": variant,
+      **VARBIND_CONTEXT,
+   }
+
+   if set_data: kwargs["value"] ="Element.Variable.Data.all"
+
+   return (
+      f"if Element.Variable.Tag_Class = {class_}\n"
+      f"   and then Element.Variable.Tag_Form = {form}\n"
+      f"   and then Element.Variable.Tag_Num = {num}\n"
+      "then\n" \
+      + indent(
+         dedent(set_field(
+            VAR_FIELD,
+            class_, form, num,
+            **kwargs,
+         )),
+         "   ",
+      ) \
+      + "\nend if;"
+   )
+
+VAR_APPLICATION = "application_wide_"
+VAR_SIMPLE = "simple_"
+
+VAR_VARIANTS = [
+   ("0", "0", "2", VAR_SIMPLE + "number"),
+   ("0", "0", "4", VAR_SIMPLE + "string"),
+   ("0", "0", "5", VAR_SIMPLE + "empty", False),
+   ("0", "0", "6", VAR_SIMPLE + "object"),
+   ("1", "0", "0", VAR_APPLICATION + "address_internet"),
+   ("1", "0", "1", VAR_APPLICATION + "counter"),
+   ("1", "0", "2", VAR_APPLICATION + "gauge"),
+   ("1", "0", "3", VAR_APPLICATION + "ticks"),
+   ("1", "0", "4", VAR_APPLICATION + "arbitrary"),
+]
+)
+
+$for (v in VAR_VARIANTS)
+$(indent(var_variant(*v), "   "*4))
+$("")
+$endfor
+            Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
       end;
 

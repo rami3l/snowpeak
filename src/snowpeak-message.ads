@@ -1,5 +1,5 @@
 with Ada.Streams;             use Ada.Streams;
-with RFLX.Prelude;
+with RFLX.Prelude;            use RFLX.Prelude;
 with RFLX.RFLX_Builtin_Types; use RFLX.RFLX_Builtin_Types;
 with Stacks;
 
