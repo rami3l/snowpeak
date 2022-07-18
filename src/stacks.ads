@@ -10,6 +10,7 @@ package Stacks is
    Stack_Underflow, Stack_Overflow : exception;
    function Length (Self : Stack) return Natural;
    function View (Self : Stack) return Stack_Array;
+   function "=" (Self, Other : Stack) return Boolean;
    function Is_Empty (Self : Stack) return Boolean;
    function Pop (Self : in out Stack) return T;
    procedure Push (Self : in out Stack; V : T);

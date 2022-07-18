@@ -20,7 +20,7 @@ procedure Main is
    Last : Stream_Element_Offset;
 
    Socket : Snowpeak.UDP_Socket.UDP_Socket;
-   Querier : Snowpeak.Querier.Querier'Class;
+   Querier : Snowpeak.Querier.Map_Querier;
 begin
    Put_Line ("=== Hello from Snowpeak! ===");
    Snowpeak.UDP_Socket.Bind (Agent_Addr, Socket);
@@ -29,18 +29,20 @@ begin
       Socket.Receive (Buffer, Last, Peer_Addr);
       Put_Line ("Datagram Received.");
       declare
-         Got : Message;
+         Got, Resp: Message;
       begin
          Got := Read (Buffer, Last);
          Put_Line ("Received Message: " & Got'Image);
          Put_Line ("Message Length: " & Got.Length'Image);
          --  TODO: Instead of echoing, should send a proper response.
-         Socket.Send (Write (Querier.Respond (Got)), Last, Peer_Addr);
+         Resp := Querier.Respond (Got);
+         Put_Line ("Response Message: " & Resp'Image);
+         Socket.Send (Write (Resp), Last, Peer_Addr);
       exception
          when E : Constraint_Error =>
-            Put_Line ("Invalid Buffer detected!");
             Put_Line (Exception_Message (E));
-            Put_Line ("Got: " & Buffer'Image);
+            goto Continue;
       end;
+      <<Continue>>
    end loop;
 end Main;

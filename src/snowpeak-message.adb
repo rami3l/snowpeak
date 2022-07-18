@@ -151,6 +151,7 @@ package body Snowpeak.Message is
       begin
          Packet.Switch_To_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
             (Context, Varbind_Seq_Context);
+
          for Element of Item.Data.Variable_Bindings.View loop
             Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
 
@@ -253,6 +254,9 @@ package body Snowpeak.Message is
 
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
+         
+         Packet.Update_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
+            (Context, Varbind_Seq_Context);
       end;
 
       Packet.Take_Buffer (Context, Buffer);
@@ -353,6 +357,7 @@ package body Snowpeak.Message is
          begin
             Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
                (Context, Varbind_Seq_Context);
+
             while Varbind_Seq.Has_Element (Varbind_Seq_Context) loop
                declare
                   Element : Varbind;
@@ -373,6 +378,9 @@ package body Snowpeak.Message is
                   Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
                end;
             end loop;
+            
+            Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
+               (Context, Varbind_Seq_Context);
          end;
          return Res;
       end;

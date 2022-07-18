@@ -14,4 +14,13 @@ package Snowpeak.Querier is
    function Respond
      (Self : Querier'Class; Request : Snowpeak.Message.Message)
       return Snowpeak.Message.Message;
+
+   type Map_Querier is new Querier with record
+      Data : Snowpeak.Message.Varbinds.Stack;
+   end record;
+
+   overriding function Get_TLV
+     (Self : Map_Querier; OID : RFLX.RFLX_Types.Bytes)
+      return TLV_Options.Option;
+
 end Snowpeak.Querier;
