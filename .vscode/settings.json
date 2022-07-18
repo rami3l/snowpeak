@@ -1,10 +1,8 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+  "[ada]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 3
   },
-  "triggerTaskOnSave.tasks": {
-    "ada: Build current project": ["*.ads", "*.adb", "alire.toml", "*.gpr"]
-  }
   /*
   "emeraldwalk.runonsave": {
     "commands": [
@@ -15,4 +13,10 @@
     ]
   }
   */
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "triggerTaskOnSave.tasks": {
+    "ada: Build current project": ["*.ads", "*.adb", "alire.toml", "*.gpr"]
+  }
 }

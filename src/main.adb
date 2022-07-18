@@ -2,8 +2,9 @@ with Ada.Exceptions;   use Ada.Exceptions;
 with Ada.Streams;      use Ada.Streams;
 with Ada.Text_IO;      use Ada.Text_IO;
 with GNAT.Sockets;     use GNAT.Sockets;
-with Snowpeak.Listener;
+with Snowpeak.UDP_Socket;
 with Snowpeak.Message; use Snowpeak.Message;
+with Snowpeak.Querier;
 with Snowpeak;
 
 procedure Main is
@@ -18,13 +19,14 @@ procedure Main is
        (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
    Last : Stream_Element_Offset;
 
-   Listener : Snowpeak.Listener.Listener;
+   Socket : Snowpeak.UDP_Socket.UDP_Socket;
+   Querier : Snowpeak.Querier.Querier'Class;
 begin
    Put_Line ("=== Hello from Snowpeak! ===");
-   Snowpeak.Listener.Bind (Agent_Addr, Listener);
+   Snowpeak.UDP_Socket.Bind (Agent_Addr, Socket);
 
    loop
-      Listener.Receive (Buffer, Last, Peer_Addr);
+      Socket.Receive (Buffer, Last, Peer_Addr);
       Put_Line ("Datagram Received.");
       declare
          Got : Message;
@@ -33,7 +35,7 @@ begin
          Put_Line ("Received Message: " & Got'Image);
          Put_Line ("Message Length: " & Got.Length'Image);
          --  TODO: Instead of echoing, should send a proper response.
-         --  Send_Socket (Listener.Channel, Write (Got), Last, To => Peer_Addr);
+         Socket.Send (Write (Querier.Respond (Got)), Last, Peer_Addr);
       exception
          when E : Constraint_Error =>
             Put_Line ("Invalid Buffer detected!");
