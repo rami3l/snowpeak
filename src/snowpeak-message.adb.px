@@ -177,6 +177,7 @@ $(set_field(
       begin
          Packet.Switch_To_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
             (Context, Varbind_Seq_Context);
+
          for Element of Item.Data.Variable_Bindings.View loop
             Varbind_Seq.Switch (Varbind_Seq_Context, Varbind_Context);
 
@@ -235,7 +236,8 @@ VAR_VARIANTS = [
 )
 
 $(indent(
-   "\nels".join(var_variant(*v)for v in VAR_VARIANTS),
+   # "els" + "if" == "elsif"
+   "\nels".join(var_variant(*v) for v in VAR_VARIANTS),
    "   "*4,
 ))
             else
@@ -244,6 +246,9 @@ $(indent(
 
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
+         
+         Packet.Update_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Value
+            (Context, Varbind_Seq_Context);
       end;
 
       Packet.Take_Buffer (Context, Buffer);
@@ -338,6 +343,7 @@ $(get_field(
          begin
             Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
                (Context, Varbind_Seq_Context);
+
             while Varbind_Seq.Has_Element (Varbind_Seq_Context) loop
                declare
                   Element : Varbind;
@@ -355,6 +361,9 @@ $(indent(get_field(
                   Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
                end;
             end loop;
+            
+            Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
+               (Context, Varbind_Seq_Context);
          end;
          return Res;
       end;

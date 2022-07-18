@@ -5,6 +5,8 @@ package body Stacks is
      (Self.Container (Min .. Self.Top));
    function Is_Empty (Self : Stack) return Boolean is
      (Self.Top < Self.Container'First);
+   function "=" (Self, Other : Stack) return Boolean is
+     (Self.View = Other.View);
    function Is_Full (Self : Stack) return Boolean is
      (Self.Top >= Self.Container'Last);
 
