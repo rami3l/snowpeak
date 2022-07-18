@@ -215,8 +215,7 @@ def var_variant(class_, form, num, variant, set_data=True):
             **kwargs,
          )),
          "   ",
-      ) \
-      + "\nend if;"
+      )
    )
 
 VAR_APPLICATION = "application_wide_"
@@ -235,10 +234,14 @@ VAR_VARIANTS = [
 ]
 )
 
-$for (v in VAR_VARIANTS)
-$(indent(var_variant(*v), "   "*4))
-$("")
-$endfor
+$(indent(
+   "\nels".join(var_variant(*v)for v in VAR_VARIANTS),
+   "   "*4,
+))
+            else
+               raise Constraint_Error with "Unsupported ASN.1 tag found";
+            end if;
+
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
       end;

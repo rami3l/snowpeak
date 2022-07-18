@@ -1,3 +1,4 @@
+with Ada.Exceptions;   use Ada.Exceptions;
 with Ada.Streams;      use Ada.Streams;
 with Ada.Text_IO;      use Ada.Text_IO;
 with GNAT.Sockets;     use GNAT.Sockets;
@@ -34,8 +35,9 @@ begin
          --  TODO: Instead of echoing, should send a proper response.
          --  Send_Socket (Listener.Channel, Write (Got), Last, To => Peer_Addr);
       exception
-         when Constraint_Error =>
+         when E : Constraint_Error =>
             Put_Line ("Invalid Buffer detected!");
+            Put_Line (Exception_Message (E));
             Put_Line ("Got: " & Buffer'Image);
       end;
    end loop;
