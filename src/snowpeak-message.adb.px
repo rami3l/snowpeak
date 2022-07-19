@@ -121,6 +121,12 @@ def set_field(
 
 def sequence(field): return ("0", "1", "16", f"{field}.Length")
 
+def sequence_of(field):
+   return (
+      "0", "1", "16",
+      fr"""[for E of {field}.View => E.Length + 2]'Reduce("+", Short_Length (0))""",
+   )
+
 def integer(field):
    return ("0", "0", "2", f"I64_Length ({field})", f"To_BE_Bytes ({field})")
 
@@ -168,7 +174,7 @@ $(set_field(
       --  data_get_response@variable_bindings: Seq<Varbind>
 $(set_field(
    "Untagged_Value_data_get_response_Value_variable_bindings",
-   *sequence("Item.Data.Variable_Bindings"),
+   *sequence_of("Item.Data.Variable_Bindings"),
 ))
 
       declare

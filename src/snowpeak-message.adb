@@ -143,7 +143,7 @@ package body Snowpeak.Message is
       Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Tag_Class (Context, RFLX.Prelude.Asn_Tag_Class (0));
       Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Tag_Form (Context, RFLX.Prelude.Asn_Tag_Form (1));
       Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (16));
-      Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Length (Context, RFLX.Prelude.Asn_Length (Item.Data.Variable_Bindings.Length));
+      Packet.Set_Untagged_Value_data_get_response_Value_variable_bindings_Untagged_Length (Context, RFLX.Prelude.Asn_Length ([for E of Item.Data.Variable_Bindings.View => E.Length + 2]'Reduce("+", Short_Length (0))));
 
       declare
          Varbind_Seq_Context : Varbind_Seq.Context;

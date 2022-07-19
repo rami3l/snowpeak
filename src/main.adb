@@ -45,6 +45,7 @@ begin
    --  START OF MAIN PROGRAM
    Put_Line ("=== Hello from Snowpeak! ===");
    Snowpeak.UDP_Socket.Bind (Agent_Addr, Socket);
+   Put_Line ("");
 
    loop
       Put_Line ("=== LOOP #" & Count'Image & " ===");
@@ -60,7 +61,6 @@ begin
          Put_Line ("");
          Resp := Querier.Respond (Got);
          Put_Line ("Response Message: " & Resp'Image);
-         Put_Line ("RESP_BUFFER = " & Write (Resp)'Image);
          Socket.Send (Write (Resp), Last, Peer_Addr);
       exception
          when E : Constraint_Error =>
