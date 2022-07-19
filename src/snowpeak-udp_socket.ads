@@ -17,7 +17,7 @@ package Snowpeak.UDP_Socket is
 
    procedure Send
      (Self :     UDP_Socket; Item : Stream_Element_Array;
-      Last : out Stream_Element_Offset; Peer_Addr : out Sock_Addr_Type);
+      Last : out Stream_Element_Offset; Peer_Addr : Sock_Addr_Type);
 
    overriding procedure Finalize (Self : in out UDP_Socket);
 end Snowpeak.UDP_Socket;

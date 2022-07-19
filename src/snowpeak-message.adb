@@ -82,10 +82,10 @@ package body Snowpeak.Message is
    function Write (Item : Message) return Stream_Element_Array is
       Buffer : Types.Bytes_Ptr :=
         new Types.Bytes (1 .. Types.Index (Snowpeak.Max_UDP_Payload_Size));
-      Context : Packet.Context;
-      Res     :
-        Stream_Element_Array
-          (1 .. Stream_Element_Offset (Snowpeak.Max_UDP_Payload_Size));
+      Context          : Packet.Context;
+      Item_Full_Length : constant Stream_Element_Offset :=
+        2 + Stream_Element_Offset (Item.Length);
+      Res : Stream_Element_Array (1 .. Item_Full_Length);
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Types.Bytes, Types.Bytes_Ptr);
@@ -260,7 +260,7 @@ package body Snowpeak.Message is
       end;
 
       Packet.Take_Buffer (Context, Buffer);
-      Res := To_Ada_Stream (Buffer.all);
+      Res := To_Ada_Stream (Buffer.all) (1 .. Item_Full_Length);
       Free (Buffer);
       return Res;
    end Write;
