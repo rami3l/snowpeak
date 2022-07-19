@@ -22,7 +22,7 @@ package body Snowpeak.UDP_Socket is
 
    procedure Send
      (Self :     UDP_Socket; Item : Stream_Element_Array;
-      Last : out Stream_Element_Offset; Peer_Addr : out Sock_Addr_Type)
+      Last : out Stream_Element_Offset; Peer_Addr : Sock_Addr_Type)
    is
    begin
       Send_Socket (Self.Channel, Item, Last, To => Peer_Addr);
