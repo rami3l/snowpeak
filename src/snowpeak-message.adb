@@ -259,6 +259,9 @@ package body Snowpeak.Message is
             (Context, Varbind_Seq_Context);
       end;
 
+      Packet.Verify_Message (Context);
+      pragma Assert (Packet.Structural_Valid_Message (Context));
+      
       Packet.Take_Buffer (Context, Buffer);
       Res := To_Ada_Stream (Buffer.all) (1 .. Item_Full_Length);
       Free (Buffer);
