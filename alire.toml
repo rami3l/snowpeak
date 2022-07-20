@@ -9,4 +9,4 @@ maintainers-logins = ["rami3l"]
 executables = ["main"]
 
 [build-switches]
-"*".ada_version = "Ada2022"
+"*".ada_version = "GNAT_Extensions"
