@@ -16,17 +16,19 @@
 
 This project is built with GNU `make`. You will also need the following binaries installed in your `PATH`:
 
-- [asn2rflx] (`asn2rflx`): Used to generate `.rflx` declarations from `.asn` specifications.
-- [RecordFlux] (`rflx`): Used to generate SPARK APIs from `.rflx` declarations.
-- [pyexpander] (`expander.py`): Used to generate Ada source files from `.px` macros. A pre-commit hook is used to regenerate the Ada sources, so it is strongly discouraged to directly modify the generated sources.
+- Python build dependencies:
+  - [asn2rflx] (`asn2rflx`): Used to generate `.rflx` declarations from `.asn` specifications.
+  - [RecordFlux] (`rflx`): Used to generate SPARK APIs from `.rflx` declarations.
+  - [pyexpander] (`expander.py`): Used to generate Ada source files from `.px` macros. A pre-commit hook is used to regenerate the Ada sources, so it is strongly discouraged to directly modify the generated sources.
 - [Alire] (`alr`): Used to build the Ada project.
+  - This project is known to build correctly with [`alr 1.2.0`](https://github.com/alire-project/alire/releases/tag/v1.2.0) and toolchain `gnat_native=12.1.1`.
 
-This project is known to build correctly in the following environment:
+To install all Python build dependencies in a quick way:
 
-- [`asn2rflx cc8b733b9c`](https://github.com/rami3l/asn2rflx/tree/cc8b733b9c832a2561601b187fd7e5de9dcb26a3)
-- [`rflx 0.5.1.dev436+gfca5f956`](https://github.com/Componolit/RecordFlux/tree/fca5f95693f0a37b582af4405ab366ebf1221b90)
-- [`expander.py 2.1.1`](https://pypi.org/project/pyexpander/2.1.1/)
-- [`alr 1.2.0`](https://github.com/alire-project/alire/releases/tag/v1.2.0)
+```bash
+# Preferably executed in a virtual environment:
+pip install -r requirements.txt
+```
 
 To build the project:
 
