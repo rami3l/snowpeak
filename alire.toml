@@ -8,5 +8,8 @@ maintainers-logins = ["rami3l"]
 
 executables = ["main"]
 
+[[depends-on]]
+gnat = ">=12.1"
+
 [build-switches]
 "*".ada_version = "GNAT_Extensions"
