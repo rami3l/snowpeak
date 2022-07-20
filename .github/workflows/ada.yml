@@ -7,8 +7,22 @@ on:
     branches: ["master"]
 
 jobs:
+  skip-check:
+    continue-on-error: false
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v4.0.0
+        with:
+          concurrent_skipping: same_content
+          do_not_skip: '["pull_request"]'
+
   build:
     runs-on: ubuntu-22.04
+    needs: skip-check
+    if: ${{ needs.skip-check.outputs.should_skip != 'true' }}
 
     steps:
       - name: Checkout
@@ -37,22 +51,7 @@ jobs:
         with:
           toolchain: "--disable-assistant"
 
-      - name: Get pip cache dir
-        id: cache-dir-pip
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: Cache Python dependencies
-        uses: actions/cache@v3
-        id: cache-pip
-        with:
-          path: ${{ steps.cache-dir-pip.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Install Python dependencies
-        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install -r requirements.txt
 
       - name: Build
