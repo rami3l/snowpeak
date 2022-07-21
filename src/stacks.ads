@@ -10,7 +10,7 @@ package Stacks is
    Stack_Underflow, Stack_Overflow : exception;
    function Length (Self : Stack) return Natural;
    function View (Self : Stack) return Stack_Array;
-   function "=" (Self, Other : Stack) return Boolean;
+   overriding function "=" (Self, Other : Stack) return Boolean;
    function Is_Empty (Self : Stack) return Boolean;
    function Pop (Self : in out Stack) return T;
    procedure Push (Self : in out Stack; V : T);
@@ -22,8 +22,8 @@ private
       Container : Stack_Array (Min .. Max);
       Top       : Natural := Min - 1;
    end record with
-      Put_Image => Put_Image;
-      --  http://www.ada-auth.org/standards/2xrm/html/RM-4-10.html
+     Put_Image => Put_Image;
+   --  http://www.ada-auth.org/standards/2xrm/html/RM-4-10.html
 
    procedure Put_Image
      (Buffer : in out Ada.Strings.Text_Buffers.Root_Buffer_Type'Class;
