@@ -201,6 +201,12 @@ $(indent(
 $py(
 VAR_FIELD = "Untagged_Value_value"
 
+def cond(*pairs, otherwise="null;"):
+   # "els" + "if" == "elsif"
+   return "\nels".join(
+      f"if {pred} then\n" + indent(dedent(then),"   ") for (pred, then) in pairs
+   ) + f"\nelse {otherwise} end if;"
+
 def var_variant(class_, form, num, variant, set_data=True):
    kwargs = {
       "length": "Element.Variable.Length",
@@ -211,18 +217,14 @@ def var_variant(class_, form, num, variant, set_data=True):
    if set_data: kwargs["value"] ="Element.Variable.Data.all"
 
    return (
-      f"if Element.Variable.Tag_Class = {class_}\n"
-      f"   and then Element.Variable.Tag_Form = {form}\n"
-      f"   and then Element.Variable.Tag_Num = {num}\n"
-      "then\n" \
-      + indent(
-         dedent(set_field(
-            VAR_FIELD,
-            class_, form, num,
-            **kwargs,
-         )),
-         "   ",
-      )
+      f"Element.Variable.Tag_Class = {class_} "
+      f"and then Element.Variable.Tag_Form = {form} "
+      f"and then Element.Variable.Tag_Num = {num}",
+      set_field(
+         VAR_FIELD,
+         class_, form, num,
+         **kwargs,
+      ),
    )
 
 VAR_APPLICATION = "application_wide_"
@@ -242,13 +244,12 @@ VAR_VARIANTS = [
 )
 
 $(indent(
-   # "els" + "if" == "elsif"
-   "\nels".join(var_variant(*v) for v in VAR_VARIANTS),
+   cond(
+      *(var_variant(*v) for v in VAR_VARIANTS),
+      otherwise='raise Constraint_Error with "Unsupported ASN.1 tag found";',
+   ),
    "   "*4,
 ))
-            else
-               raise Constraint_Error with "Unsupported ASN.1 tag found";
-            end if;
 
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
