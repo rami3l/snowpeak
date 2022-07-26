@@ -147,10 +147,10 @@ $(set_field("Untagged_Value_version", *integer("Item.Version")))
       --  community: Bytes
 $(set_field("Untagged_Value_community", *octet_string("Item.Community")))
 
-      --  TODO: Support get-next-request?
 $(set_field(
    "Untagged_Value_data",
-   "2", "1", "2", "Item.Data.Length", variant="get_response",
+   "Item.Data.Tag_Class", "Item.Data.Tag_Form", "Item.Data.Tag_Num",
+   "Item.Data.Length", variant="get_response",
 ))
 
       --  data_get_response@request_id: int
