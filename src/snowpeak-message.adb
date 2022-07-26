@@ -167,89 +167,60 @@ package body Snowpeak.Message is
 
          --  Write `Element.Variable` to `Untagged_Value_value`.
 
-            if Element.Variable.Tag_Class = 0
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 2
-            then
+            if Element.Variable.Tag_Class = 0 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 2 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (2));
                Varbind_Packet.Set_Untagged_Value_value_simple_number_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_simple_number_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 0
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 4
-            then
+            elsif Element.Variable.Tag_Class = 0 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 4 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (4));
                Varbind_Packet.Set_Untagged_Value_value_simple_string_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_simple_string_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 0
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 5
-            then
+            elsif Element.Variable.Tag_Class = 0 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 5 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (5));
                Varbind_Packet.Set_Untagged_Value_value_simple_empty_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
-            elsif Element.Variable.Tag_Class = 0
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 6
-            then
+            elsif Element.Variable.Tag_Class = 0 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 6 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (6));
                Varbind_Packet.Set_Untagged_Value_value_simple_object_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_simple_object_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 1
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 0
-            then
+            elsif Element.Variable.Tag_Class = 1 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 0 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (1));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (0));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_address_internet_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_address_internet_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 1
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 1
-            then
+            elsif Element.Variable.Tag_Class = 1 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 1 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (1));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (1));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_counter_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_counter_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 1
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 2
-            then
+            elsif Element.Variable.Tag_Class = 1 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 2 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (1));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (2));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_gauge_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_gauge_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 1
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 3
-            then
+            elsif Element.Variable.Tag_Class = 1 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 3 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (1));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (3));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_ticks_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_ticks_Value (Varbind_Context, Element.Variable.Data.all);
-            elsif Element.Variable.Tag_Class = 1
-               and then Element.Variable.Tag_Form = 0
-               and then Element.Variable.Tag_Num = 4
-            then
+            elsif Element.Variable.Tag_Class = 1 and then Element.Variable.Tag_Form = 0 and then Element.Variable.Tag_Num = 4 then
                Varbind_Packet.Set_Untagged_Value_value_Tag_Class (Varbind_Context, RFLX.Prelude.Asn_Tag_Class (1));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Form (Varbind_Context, RFLX.Prelude.Asn_Tag_Form (0));
                Varbind_Packet.Set_Untagged_Value_value_Tag_Num (Varbind_Context, RFLX.Prelude.Asn_Tag_Num (4));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_arbitrary_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_arbitrary_Value (Varbind_Context, Element.Variable.Data.all);
-            else
-               raise Constraint_Error with "Unsupported ASN.1 tag found";
-            end if;
+            else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
 
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
