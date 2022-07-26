@@ -112,10 +112,9 @@ package body Snowpeak.Message is
       Packet.Set_Untagged_Value_community_Untagged_Length (Context, RFLX.Prelude.Asn_Length (Item.Community.Length));
       Packet.Set_Untagged_Value_community_Untagged_Value (Context, Types.Bytes (Item.Community.View));
 
-      --  TODO: Support get-next-request?
-      Packet.Set_Untagged_Value_data_Tag_Class (Context, RFLX.Prelude.Asn_Tag_Class (2));
-      Packet.Set_Untagged_Value_data_Tag_Form (Context, RFLX.Prelude.Asn_Tag_Form (1));
-      Packet.Set_Untagged_Value_data_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (2));
+      Packet.Set_Untagged_Value_data_Tag_Class (Context, RFLX.Prelude.Asn_Tag_Class (Item.Data.Tag_Class));
+      Packet.Set_Untagged_Value_data_Tag_Form (Context, RFLX.Prelude.Asn_Tag_Form (Item.Data.Tag_Form));
+      Packet.Set_Untagged_Value_data_Tag_Num (Context, RFLX.Prelude.Asn_Tag_Num (Item.Data.Tag_Num));
       Packet.Set_Untagged_Value_data_get_response_Length (Context, RFLX.Prelude.Asn_Length (Item.Data.Length));
 
       --  data_get_response@request_id: int

@@ -36,9 +36,12 @@ package Snowpeak.Message is
    package Varbinds is new Stacks (32, Varbind);
 
    type PDU is tagged record
+      Tag_Class         : Prelude.Asn_Tag_Class := 2; --  Context(2)
+      Tag_Form          : Prelude.Asn_Tag_Form  := 1; --  Constructed(1)
+      Tag_Num           : Prelude.Asn_Tag_Num   := 2; --  GetResponse(2)
       Request_ID        : I64;
-      Error_Status      : I64 := 0; --  noError(0)
-      Error_Index       : I64 := 0;
+      Error_Status      : I64                   := 0; --  noError(0)
+      Error_Index       : I64                   := 0;
       Variable_Bindings : Varbinds.Stack;
    end record;
    --  https://github.com/k-sone/snmpgo/blob/de09377ff34857b08afdc16ea8c7c2929eb1fc6e/pdu.go#L188-L194
