@@ -27,18 +27,30 @@ procedure Main is
 
    --  REQUIRED FOR DUMMY QUERIER
    package Types renames RFLX.RFLX_Types;
-   Dummy_OID_Bytes : Types.Bytes     := [43, 6, 1, 2, 1, 1, 5, 0];
-   Dummy_Name      : Types.Bytes_Ptr := new Types.Bytes'([70, 54, 51, 48, 48]);
+   Dummy_Contact_OID : Types.Bytes     := [43, 6, 1, 2, 1, 1, 4, 0];
+   Dummy_Contact     : Types.Bytes_Ptr :=
+     new Types.Bytes'([102, 111, 46, 111, 98, 64, 97, 114, 98, 46, 97, 122]);
+   Dummy_Name_OID : Types.Bytes     := [43, 6, 1, 2, 1, 1, 5, 0];
+   Dummy_Name     : Types.Bytes_Ptr := new Types.Bytes'([70, 54, 51, 48, 48]);
 begin
    --  INIT OF DUMMY QUERIER
    declare
       Element : Varbind;
    begin
-      for B of Dummy_OID_Bytes loop
+      for B of Dummy_Contact_OID loop
+         Element.OID.Push (Types.Byte (B));
+      end loop;
+      Element.Variable := (Tag_Num => 4, Data => Dummy_Contact, others => <>);
+      Querier.Data.Push (Element);
+   end;
+
+   declare
+      Element : Varbind;
+   begin
+      for B of Dummy_Name_OID loop
          Element.OID.Push (Types.Byte (B));
       end loop;
       Element.Variable := (Tag_Num => 4, Data => Dummy_Name, others => <>);
-
       Querier.Data.Push (Element);
    end;
 

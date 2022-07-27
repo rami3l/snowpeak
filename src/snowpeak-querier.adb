@@ -5,20 +5,23 @@ package body Snowpeak.Querier is
      (Self : Querier'Class; Request : Message.Message) return Message.Message
    is
       Varbinds : Message.Varbinds.Stack;
-      Ans : TLV_Options.Option;
+      Ans : Varbind_Options.Option;
       Res : Message.Message;
       View : constant Message.Varbinds.Stack_Array :=
          Request.Data.Variable_Bindings.View;
    begin
       for I in View'First .. View'Last loop
-         Ans := Self.Get_TLV (Bytes (View (I).OID.View));
+         Ans := (case Request.Data.Tag_Num is
+            when 0 => Self.Get_TLV (Bytes (View (I).OID.View)),
+            when 1 => Self.Get_Next_TLV (Bytes (View (I).OID.View)),
+            when others => (Valid => False));
          if not Ans.Valid then
             Res := (Request with delta Data => (Request.Data with delta
                Error_Status => 2, --  noSuchname
                Error_Index => Message.I64 (I)));
             exit;
          end if;
-         Varbinds.Push ((OID => View (I).OID, Variable => Ans.Value));
+         Varbinds.Push (Ans.Value);
       end loop;
       if Integer (Res.Data.Error_Status) /= 2 then --  noSuchName
          Res := (Request with delta Data => (Request.Data with delta
@@ -35,15 +38,29 @@ package body Snowpeak.Querier is
 
    overriding function Get_TLV
      (Self : Map_Querier; OID : RFLX.RFLX_Types.Bytes)
-      return TLV_Options.Option
+      return Varbind_Options.Option
    is
-      Res : TLV_Options.Option;
+      Res : Varbind_Options.Option;
    begin
       for V of Self.Data.View loop
          if OID = Bytes (V.OID.View) then
-            return (Valid => True, Value => V.Variable);
+            return (Valid => True, Value => V);
          end if;
       end loop;
       return Res;
    end Get_TLV;
+
+   overriding function Get_Next_TLV
+     (Self : Map_Querier; OID : RFLX.RFLX_Types.Bytes)
+      return Varbind_Options.Option
+   is
+      Res : Varbind_Options.Option;
+   begin
+      for V of Self.Data.View loop
+         if OID < Bytes (V.OID.View) then
+            return (Valid => True, Value => V);
+         end if;
+      end loop;
+      return Res;
+   end Get_Next_TLV;
 end Snowpeak.Querier;

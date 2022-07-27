@@ -1,6 +1,6 @@
 # snowpeak
 
-[WIP] A PoC implementation of an SNMPv1 agent using [RecordFlux] and [asn2rflx].
+[Incomplete] A PoC SNMPv1 agent simulator, implemented using [RecordFlux] and [asn2rflx].
 
 ---
 
@@ -8,9 +8,22 @@
 
 - [snowpeak](#snowpeak)
   - [Contents](#contents)
+  - [Features](#features)
   - [Development](#development)
 
 ---
+
+## Features
+
+To avoid port conflicts, this agent listens on port `10161` instead of the default `161`.
+
+- [ ] Receiving
+  - [x] `GetRequest`
+  - [x] `GetNextRequest`
+  - [ ] `SetRequest`
+- [ ] Sending
+  - [x] `GetResponse`
+  - [ ] `Trap`
 
 ## Development
 
