@@ -221,7 +221,6 @@ package body Snowpeak.Message is
                Varbind_Packet.Set_Untagged_Value_value_application_wide_arbitrary_Length (Varbind_Context, RFLX.Prelude.Asn_Length (Element.Variable.Length));
                Varbind_Packet.Set_Untagged_Value_value_application_wide_arbitrary_Value (Varbind_Context, Element.Variable.Data.all);
             else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
-
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
          
@@ -291,45 +290,83 @@ package body Snowpeak.Message is
             for C of Buffer loop Res.Community.Push (C); end loop;
          end;
 
-         --  TODO: Support get-next-request?
+         Res.Data.Tag_Class := Packet.Get_Untagged_Value_data_Tag_Class (Context);
+         Res.Data.Tag_Form := Packet.Get_Untagged_Value_data_Tag_Form (Context);
+         Res.Data.Tag_Num := Packet.Get_Untagged_Value_data_Tag_Num (Context);
 
-         --  data_get_request@request_id: int
-         declare
-            Size : constant Types.Bit_Length := Packet.Field_Size
-               (Context, Packet.F_Untagged_Value_data_get_request_Value_request_id_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
-         begin
-            Packet.Get_Untagged_Value_data_get_request_Value_request_id_Untagged_Value (Context, Buffer);
-            Res.Data.Request_ID := From_BE_Bytes (Buffer);
-         end;
+         --  data_get_(next_)request@request_id: int
+         if Res.Data.Tag_Num = 0 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_request_Value_request_id_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_request_Value_request_id_Untagged_Value (Context, Buffer);
+               Res.Data.Request_ID := From_BE_Bytes (Buffer);
+            end;
+         elsif Res.Data.Tag_Num = 1 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_next_request_Value_request_id_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_next_request_Value_request_id_Untagged_Value (Context, Buffer);
+               Res.Data.Request_ID := From_BE_Bytes (Buffer);
+            end;
+         else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
 
-         --  data_get_request@error_status: int
-         declare
-            Size : constant Types.Bit_Length := Packet.Field_Size
-               (Context, Packet.F_Untagged_Value_data_get_request_Value_error_status_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
-         begin
-            Packet.Get_Untagged_Value_data_get_request_Value_error_status_Untagged_Value (Context, Buffer);
-            Res.Data.Error_Status := From_BE_Bytes (Buffer);
-         end;
+         --  data_get_(next_)request@error_status: int
+         if Res.Data.Tag_Num = 0 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_request_Value_error_status_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_request_Value_error_status_Untagged_Value (Context, Buffer);
+               Res.Data.Error_Status := From_BE_Bytes (Buffer);
+            end;
+         elsif Res.Data.Tag_Num = 1 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_next_request_Value_error_status_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_next_request_Value_error_status_Untagged_Value (Context, Buffer);
+               Res.Data.Error_Status := From_BE_Bytes (Buffer);
+            end;
+         else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
 
-         --  data_get_request@error_index: int
-         declare
-            Size : constant Types.Bit_Length := Packet.Field_Size
-               (Context, Packet.F_Untagged_Value_data_get_request_Value_error_index_Untagged_Value);
-            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
-         begin
-            Packet.Get_Untagged_Value_data_get_request_Value_error_index_Untagged_Value (Context, Buffer);
-            Res.Data.Error_Index := From_BE_Bytes (Buffer);
-         end;
+         --  data_get_(next_)request@error_index: int
+         if Res.Data.Tag_Num = 0 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_request_Value_error_index_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_request_Value_error_index_Untagged_Value (Context, Buffer);
+               Res.Data.Error_Index := From_BE_Bytes (Buffer);
+            end;
+         elsif Res.Data.Tag_Num = 1 then
+            declare
+               Size : constant Types.Bit_Length := Packet.Field_Size
+                  (Context, Packet.F_Untagged_Value_data_get_next_request_Value_error_index_Untagged_Value);
+               Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+            begin
+               Packet.Get_Untagged_Value_data_get_next_request_Value_error_index_Untagged_Value (Context, Buffer);
+               Res.Data.Error_Index := From_BE_Bytes (Buffer);
+            end;
+         else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
 
-         --  data_get_request@variable_bindings: Seq<Varbind>
+         --  data_get_(next_)request@variable_bindings: Seq<Varbind>
          declare
             Varbind_Seq_Context : Varbind_Seq.Context;
             Varbind_Context : Varbind_Packet.Context;
          begin
-            Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
-               (Context, Varbind_Seq_Context);
+            if Res.Data.Tag_Num = 0 then
+               Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);
+            elsif Res.Data.Tag_Num = 1 then
+               Packet.Switch_To_Untagged_Value_data_get_next_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);
+            else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
 
             while Varbind_Seq.Has_Element (Varbind_Seq_Context) loop
                declare
@@ -351,9 +388,12 @@ package body Snowpeak.Message is
                   Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
                end;
             end loop;
-            
-            Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
-               (Context, Varbind_Seq_Context);
+
+            if Res.Data.Tag_Num = 0 then
+               Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);
+            elsif Res.Data.Tag_Num = 1 then
+               Packet.Update_Untagged_Value_data_get_next_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);
+            else raise Constraint_Error with "Unsupported ASN.1 tag found"; end if;
          end;
          return Res;
       end;

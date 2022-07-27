@@ -250,7 +250,6 @@ $(indent(
    ),
    "   "*4,
 ))
-
             Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
          end loop;
          
@@ -326,33 +325,87 @@ $(get_field(
    "for C of Buffer loop Res.Community.Push (C); end loop;",
 ))
 
-         --  TODO: Support get-next-request?
+$py(
+def get_field_cond(*triples, packet="Packet", context="Context"):
+   res = cond(*(
+      (
+         pred,
+         f"""\
+         declare
+            Size : constant Types.Bit_Length := {packet}.Field_Size
+               ({context}, {packet}.F_{rflx_field}_Untagged_Value);
+            Buffer : Types.Bytes (1 .. Types.To_Index (Size));
+         begin
+            {packet}.Get_{rflx_field}_Untagged_Value ({context}, Buffer);
+            {assignment}
+         end;""",
+      ) for (pred, rflx_field, assignment) in triples
+   ), otherwise='raise Constraint_Error with "Unsupported ASN.1 tag found";')
 
-         --  data_get_request@request_id: int
-$(get_field(
-   "Untagged_Value_data_get_request_Value_request_id",
-   "Res.Data.Request_ID := From_BE_Bytes (Buffer);",
+   return indent(res, "   "*3)
+)
+         Res.Data.Tag_Class := Packet.Get_Untagged_Value_data_Tag_Class (Context);
+         Res.Data.Tag_Form := Packet.Get_Untagged_Value_data_Tag_Form (Context);
+         Res.Data.Tag_Num := Packet.Get_Untagged_Value_data_Tag_Num (Context);
+
+         --  data_get_(next_)request@request_id: int
+$(get_field_cond(
+   (
+      "Res.Data.Tag_Num = 0",
+      "Untagged_Value_data_get_request_Value_request_id",
+      "Res.Data.Request_ID := From_BE_Bytes (Buffer);",
+   ),
+   (
+      "Res.Data.Tag_Num = 1",
+      "Untagged_Value_data_get_next_request_Value_request_id",
+      "Res.Data.Request_ID := From_BE_Bytes (Buffer);",
+   ),
 ))
 
-         --  data_get_request@error_status: int
-$(get_field(
-   "Untagged_Value_data_get_request_Value_error_status",
-   "Res.Data.Error_Status := From_BE_Bytes (Buffer);",
+         --  data_get_(next_)request@error_status: int
+$(get_field_cond(
+   (
+      "Res.Data.Tag_Num = 0",
+      "Untagged_Value_data_get_request_Value_error_status",
+      "Res.Data.Error_Status := From_BE_Bytes (Buffer);",
+   ),
+   (
+      "Res.Data.Tag_Num = 1",
+      "Untagged_Value_data_get_next_request_Value_error_status",
+      "Res.Data.Error_Status := From_BE_Bytes (Buffer);",
+   ),
 ))
 
-         --  data_get_request@error_index: int
-$(get_field(
-   "Untagged_Value_data_get_request_Value_error_index",
-   "Res.Data.Error_Index := From_BE_Bytes (Buffer);",
+         --  data_get_(next_)request@error_index: int
+$(get_field_cond(
+   (
+      "Res.Data.Tag_Num = 0",
+      "Untagged_Value_data_get_request_Value_error_index",
+      "Res.Data.Error_Index := From_BE_Bytes (Buffer);",
+   ),
+   (
+      "Res.Data.Tag_Num = 1",
+      "Untagged_Value_data_get_next_request_Value_error_index",
+      "Res.Data.Error_Index := From_BE_Bytes (Buffer);",
+   ),
 ))
 
-         --  data_get_request@variable_bindings: Seq<Varbind>
+         --  data_get_(next_)request@variable_bindings: Seq<Varbind>
          declare
             Varbind_Seq_Context : Varbind_Seq.Context;
             Varbind_Context : Varbind_Packet.Context;
          begin
-            Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
-               (Context, Varbind_Seq_Context);
+$(indent(cond(
+   (
+      "Res.Data.Tag_Num = 0",
+      "Packet.Switch_To_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);",
+   ),
+   (
+      "Res.Data.Tag_Num = 1",
+      "Packet.Switch_To_Untagged_Value_data_get_next_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);",
+   ),
+   otherwise='raise Constraint_Error with "Unsupported ASN.1 tag found";',
+), "   "*4))
 
             while Varbind_Seq.Has_Element (Varbind_Seq_Context) loop
                declare
@@ -371,9 +424,18 @@ $(indent(get_field(
                   Varbind_Seq.Update (Varbind_Seq_Context, Varbind_Context);
                end;
             end loop;
-            
-            Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value
-               (Context, Varbind_Seq_Context);
+
+$(indent(cond(
+   (
+      "Res.Data.Tag_Num = 0",
+      "Packet.Update_Untagged_Value_data_get_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);",
+   ),
+   (
+      "Res.Data.Tag_Num = 1",
+      "Packet.Update_Untagged_Value_data_get_next_request_Value_variable_bindings_Untagged_Value (Context, Varbind_Seq_Context);",
+   ),
+   otherwise='raise Constraint_Error with "Unsupported ASN.1 tag found";',
+), "   "*4))
          end;
          return Res;
       end;
