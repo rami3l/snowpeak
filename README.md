@@ -27,14 +27,15 @@ To avoid port conflicts, this agent listens on port `10161` instead of the defau
 
 ## Development
 
-This project is built with GNU `make`. You will also need the following binaries installed in your `PATH`:
+This project is built with [Alire] (`alr`). You will also need the following binaries installed in your `PATH`:
 
+- GNU `make`.
 - Python build dependencies:
   - [asn2rflx] (`asn2rflx`): Used to generate `.rflx` declarations from `.asn` specifications.
   - [RecordFlux] (`rflx`): Used to generate SPARK APIs from `.rflx` declarations.
   - [pyexpander] (`expander.py`): Used to generate Ada source files from `.px` macros. A pre-commit hook is used to regenerate the Ada sources, so it is strongly discouraged to directly modify the generated sources.
-- [Alire] (`alr`): Used to build the Ada project.
-  - This project is known to build correctly with [`alr 1.2.0`](https://github.com/alire-project/alire/releases/tag/v1.2.0) and toolchain `gnat_native=12.1.1`.
+
+This project is known to build correctly with [`alr 1.2.0`](https://github.com/alire-project/alire/releases/tag/v1.2.0) and `gnat_native=12.1.2` toolchain installed.
 
 To install all Python build dependencies in a quick way:
 
