@@ -13,7 +13,7 @@ GENERATED = $(shell find $(GENERATED_DIR) -type f -name "*.ad?")
 # -include $(SPECS_DIR)
 $(SPECS_DIR)/**: $(ASNS)
 	mkdir -p $(SPECS_DIR)
-	$(ASN2RFLX) -o $(SPECS_DIR) $(ASNS)
+	alr exec -- $(ASN2RFLX) -o $(SPECS_DIR) $(ASNS)
 
 .PHONY: specs
 specs: $(SPECS_DIR)/**
@@ -22,7 +22,7 @@ specs: $(SPECS_DIR)/**
 $(GENERATED_DIR)/**: $(SPECS_DIR)/**
 	mkdir -p $(GENERATED_DIR)
     # HACK: --no-verification since it takes too long to verify.
-	$(RFLX) --no-verification generate -d $(GENERATED_DIR) $(SPECS)
+	alr exec -- $(RFLX) --no-verification generate -d $(GENERATED_DIR) $(SPECS)
 
 .PHONY: generate
 generate: $(GENERATED_DIR)/**
