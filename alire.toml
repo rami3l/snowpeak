@@ -13,3 +13,7 @@ gnat = ">=12.1"
 
 [build-switches]
 "*".ada_version = "GNAT_Extensions"
+
+[[actions]]
+type = "pre-build"
+command = ["make", "generate", "expand"]
