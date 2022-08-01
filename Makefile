@@ -11,33 +11,25 @@ GENERATED_DIR = ./obj/rflx
 GENERATED = $(shell find $(GENERATED_DIR) -type f -name "*.ad?")
 
 # -include $(SPECS_DIR)
-$(SPECS_DIR): $(ASNS)
+$(SPECS_DIR)/**: $(ASNS)
 	mkdir -p $(SPECS_DIR)
 	$(ASN2RFLX) -o $(SPECS_DIR) $(ASNS)
 
 .PHONY: specs
-specs: $(SPECS_DIR)
+specs: $(SPECS_DIR)/**
 
 # -include $(GENERATED_DIR)
-$(GENERATED_DIR): $(SPECS_DIR)
+$(GENERATED_DIR)/**: $(SPECS_DIR)/**
 	mkdir -p $(GENERATED_DIR)
     # HACK: --no-verification since it takes too long to verify.
 	$(RFLX) --no-verification generate -d $(GENERATED_DIR) $(SPECS)
 
 .PHONY: generate
-generate: $(GENERATED_DIR)
+generate: $(GENERATED_DIR)/**
 
 .PHONY: expand
 expand:
 	sh -c 'for f in $$(find . -name "*.px"); do expander.py -af $$f > $$(dirname $$f)/$$(basename $$f .px); done'
-
-.PHONY: build
-build: generate expand
-	alr build
-
-.PHONY: run
-run: generate expand
-	alr run
 
 .PHONY: clean
 clean:

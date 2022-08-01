@@ -46,10 +46,16 @@ pip install -r requirements.txt
 To build the project:
 
 ```bash
-make build
+alr build
 ```
 
-It is also possible to execute the separate steps in the building process:
+To run the project:
+
+```bash
+alr run
+```
+
+It is also possible to execute the separate code generation steps in the building process:
 
 ```bash
 # Generate the `.rflx` declarations and the SPARK APIs.
