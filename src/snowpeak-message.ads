@@ -18,6 +18,7 @@ package Snowpeak.Message is
       Tag_Num   : Prelude.Asn_Tag_Num   := 5;
       Data      : Bytes_Ptr;
    end record;
+   --  TLV represents an SNMP variable encoded with ASN.1 BER.
 
    function Length (Self : TLV) return Short_Length;
 
@@ -29,6 +30,7 @@ package Snowpeak.Message is
       --  However, it seems necessary to include the T field as well.
       --  Ideally there should be a huge sum type as in https://docs.rs/snmp-parser/0.8.0/snmp_parser/snmp/enum.ObjectSyntax.html
    end record;
+   --  Varbind represents an SNMP variable binding.
    --  https://github.com/k-sone/snmpgo/blob/de09377ff34857b08afdc16ea8c7c2929eb1fc6e/pdu.go#L12-L15
 
    function Length (Self : Varbind) return Short_Length;
@@ -44,6 +46,7 @@ package Snowpeak.Message is
       Error_Index       : I64                   := 0;
       Variable_Bindings : Varbinds.Stack;
    end record;
+   --  PDU represents an SNMP PDU (except Trap-PDU).
    --  https://github.com/k-sone/snmpgo/blob/de09377ff34857b08afdc16ea8c7c2929eb1fc6e/pdu.go#L188-L194
 
    function Length (Self : PDU) return Short_Length;
@@ -53,15 +56,19 @@ package Snowpeak.Message is
       Community : Bytes.Stack;
       Data      : PDU; --  TODO: Add support for Trap_PDU.
    end record;
+   --  Message represents an SNMP packet.
    --  https://github.com/k-sone/snmpgo/blob/de09377ff34857b08afdc16ea8c7c2929eb1fc6e/message.go#L20-L25
 
    function Length (Self : Message) return Short_Length;
+   --  Returns the length of the ASN.1 BER encoding of this Message.
 
    type Message_Access is access Message;
 
    function Write (Item : Message) return Stream_Element_Array;
+   --  Encodes this Message with ASN.1 BER.
 
    function Read
      (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)
       return Message;
+   --  Decodes a Message from ASN.1 BER bytes in the given Buffer.
 end Snowpeak.Message;

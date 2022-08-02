@@ -9,4 +9,6 @@ package Options is
             null;
       end case;
    end record;
+   --  Option represents an value that might or might not be present according to the `Valid` flag.
+   --  https://doc.rust-lang.org/std/option/enum.Option.html
 end Options;

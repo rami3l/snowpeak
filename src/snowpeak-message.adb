@@ -33,6 +33,7 @@ package body Snowpeak.Message is
          Bits := Bits + 1;
       end loop;
    end I64_Length;
+   --  Returns the length of the ASN.1 BER encoding of an integer (in bytes).
    --  https://github.com/eerimoq/asn1tools/blob/44746200179038edc7d0895b03c5c0bb58285e43/asn1tools/codecs/ber.py#L253-L255
 
    function To_BE_Bytes (I : I64) return Types.Bytes is
@@ -53,12 +54,15 @@ package body Snowpeak.Message is
    begin
       return As_Bytes ((Inner => I)) (Types.Index (8 - Len + 1) .. 8);
    end To_BE_Bytes;
+   --  Encodes an interger with ASN.1 BER.
 
    function Length (Self : TLV) return Short_Length is
      (Short_Length (if Self.Data = null then 0 else Self.Data.all'Length));
+   --  Returns the length of Data in bytes.
 
    function Length (Self : Varbind) return Short_Length is
      (Short_Length (Self.OID.Length) + Self.Variable.Length + 2 * 2);
+   --  Returns the length of the ASN.1 BER encoding of this record.
 
    function Length (Self : PDU) return Short_Length is
       Res : Short_Length :=
@@ -74,6 +78,7 @@ package body Snowpeak.Message is
       end loop;
       return Res;
    end Length;
+   --  Returns the length of the ASN.1 BER encoding of this record.
 
    function Length (Self : Message) return Short_Length is
      (I64_Length (Self.Version) + Short_Length (Self.Community.Length) +
@@ -248,6 +253,7 @@ package body Snowpeak.Message is
       end loop;
       return (if Pos then Res else Res - 2**(8 * Raw'Length - 1));
    end From_BE_Bytes;
+   --  Decodes an integer from ASN.1 BER bytes.
 
    function Read
      (Buffer : Stream_Element_Array; Last : Stream_Element_Offset)

@@ -22,8 +22,9 @@ private
       Container : Stack_Array (Min .. Max);
       Top       : Natural := Min - 1;
    end record with
-      Put_Image => Put_Image;
-      --  http://www.ada-auth.org/standards/2xrm/html/RM-4-10.html
+     Put_Image => Put_Image;
+   --  Stack is a generic LIFO collection type.
+   --  http://www.ada-auth.org/standards/2xrm/html/RM-4-10.html
 
    procedure Put_Image
      (Buffer : in out Ada.Strings.Text_Buffers.Root_Buffer_Type'Class;
