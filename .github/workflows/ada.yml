@@ -36,20 +36,13 @@ jobs:
       - name: Cache GNAT toolchain
         uses: actions/cache@v3
         with:
-          path: ./cached_gnat
-          key: ${{ runner.os }}-gnat-ce
-          restore-keys: ${{ runner.os }}-gnat-ce
-
-      - name: Set up GNAT toolchain
-        uses: ada-actions/toolchain@ce2021
-        with:
-          distrib: community
-          install_dir: ./cached_gnat
+          path: |
+            ~/.config/alire
+            build/alire
+          key: ${{ runner.os }}-gnat-fsf
 
       - name: Set up Alire
         uses: alire-project/setup-alire@v1
-        with:
-          toolchain: "--disable-assistant"
 
       - name: Get pip cache dir
         id: cache-dir-pip
@@ -61,9 +54,7 @@ jobs:
         id: cache-pip
         with:
           path: ${{ steps.cache-dir-pip.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', './cached_gnat/**') }}
 
       - name: Install Python dependencies
         run: alr exec -- pip install -r requirements.txt
